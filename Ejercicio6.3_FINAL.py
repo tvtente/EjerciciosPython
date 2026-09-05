@@ -40,13 +40,13 @@ FRUTAS_DISPONIBLES={
     "🍈 Melón":{"codigo":"08","tipo":"unidad","precio_kg":2.54,"pesos":[0.850,1.250]},
     "🍍 Piña":{"codigo":"09","tipo":"unidad","precio_kg":1.54,"pesos":[0.800,0.750,1.300]},
     "🍉 Sandía":{"codigo":"10","tipo":"unidad","precio_kg":1.44,"pesos":[1.800,1.550,1.400]},
-    "🧡 Papaya":{"codigo":"11","tipo":"unidad","precio_kg":1.64,"pesos":[0.800,0.650,1.040]},
+    "🌴 Papaya":{"codigo":"11","tipo":"unidad","precio_kg":1.64,"pesos":[0.800, 0.650, 1.040]},
     "🌰 Durian":{"codigo":"12","tipo":"unidad","precio_kg":5.00,"pesos":[1.800,2.000,2.200,1.950,2.100]},
     "🍇 Uva":{"codigo":"13","tipo":"peso","precio_kg":1.80,"stock":2.0},
     "🥝 Kiwi":{"codigo":"14","tipo":"peso","precio_kg":2.20,"stock":6.0},
     "🥭 Mango":{"codigo":"15","tipo":"peso","precio_kg":2.00,"stock":7.0},
     "🍋 Limón":{"codigo":"16","tipo":"peso","precio_kg":1.40,"stock":10.0},
-    "🥥 Coco":{"codigo":"17","tipo":"peso","precio_kg":2.50,"stock":7.0}
+    "🥥 Coco":{"codigo":"17","tipo":"unidad","precio_kg":3.14,"pesos":[0.860,0.615,0.704]}
 }
 
 carrito={}
