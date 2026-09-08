@@ -68,17 +68,42 @@ tipo_entrega=None
 # UTILIDADES
 # ============================================================
 def limpiar_pantalla():
+    '''Limpia la consola según el sistema operativo.'''
     if platform.system()=="Windows":
         subprocess.run(["cls"],shell=True)
     else:
         subprocess.run(["clear"])
 
+def calcular_ancho_visual(texto):
+    '''Calcula el ancho visible de un texto teniendo en cuenta los emojis.'''
+    """Calcula el ancho visible para alinear textos que contienen emojis."""
+    ancho=0
+    for caracter in texto:
+        if unicodedata.east_asian_width(caracter) in("F","W") or ord(caracter)>0x1F600:
+            ancho+=2
+        else:
+            ancho+=1
+    return ancho
+
+def formatear_linea(texto,ancho,alineacion="<"):
+    '''Alinea un texto dentro de un ancho considerando su tamaño visual.'''
+    """Añade espacios sin alterar el texto original, teniendo en cuenta emojis."""
+    espacios=max(0,ancho-calcular_ancho_visual(texto))
+    if alineacion=="^":
+        izquierda=espacios//2
+        return " "*izquierda+texto+" "*(espacios-izquierda)
+    if alineacion==">":
+        return " "*espacios+texto
+    return texto+" "*espacios
+
 def calcular_total_final():
+    '''Calcula el total del carrito incluyendo el envío cuando corresponde.'''
     subtotal=sum(datos["subtotal"] for datos in carrito.values())
     envio=COSTE_ENVIO_DOMICILIO if tipo_compra=="1" and tipo_entrega=="2" else 0.0
     return round(subtotal+envio,2)
 
 def mostrar_menu_pedido():
+    '''Muestra el menú principal y devuelve la opción seleccionada.'''
     ancho=58
     ancho_con_emoji=ancho-1
     print(f"\n{CIAN}╔{'═'*ancho}╗{RESET}")
@@ -104,6 +129,7 @@ def mostrar_menu_pedido():
 # BOLSAS AUTOMÁTICAS
 # ============================================================
 def actualizar_bolsas_automaticas():
+    '''Calcula y actualiza las bolsas necesarias para el envío a domicilio.'''
     if not(tipo_compra=="1" and tipo_entrega=="2"):
         return
     carrito.pop("👜 Bolsa",None)
@@ -117,6 +143,7 @@ def actualizar_bolsas_automaticas():
 # BUSCAR FRUTA
 # ============================================================
 def buscar_fruta():
+    '''Busca una fruta por código o nombre y devuelve el producto seleccionado.'''
     ancho=48
     ancho_con_emoji=ancho-1
     print(f"\n{CIAN}╔{'═'*ancho}╗{RESET}")
@@ -137,8 +164,9 @@ def buscar_fruta():
         codigo=input("Código del producto (0 volver): ").strip()
         if codigo=="0":
             return None
+        codigo_normalizado=codigo.zfill(2) if codigo.isdigit() else codigo
         for nombre,datos in FRUTAS_DISPONIBLES.items():
-            if datos["codigo"]==codigo:
+            if datos["codigo"]==codigo_normalizado:
                 return nombre
         print("⚠️ Código inexistente.")
         input("Pulsa Enter para continuar.")
@@ -172,6 +200,7 @@ def buscar_fruta():
 # MOSTRAR CATÁLOGO
 # ============================================================
 def mostrar_catalogo():
+    '''Muestra el catálogo con precio, stock y estado de cada fruta.'''
     ancho=54
     print(f"\n{CIAN}╔{'═'*ancho}╗{RESET}")
     print(f"{CIAN}║{RESET}{NEGRITA}{'FRUTAS DISPONIBLES':^{ancho}}{RESET}{CIAN}║{RESET}")
@@ -192,7 +221,8 @@ def mostrar_catalogo():
             estado="🟡 Bajo"
         else:
             estado="✅"
-        fila=f"{datos['codigo']:^6}│{nombre:<14}│ {datos['precio_kg']:>6.2f} €│{texto_disponible:>10}│{estado:<9}"
+        nombre_formateado=formatear_linea(nombre,15)
+        fila=f"{datos['codigo']:^6}│{nombre_formateado}│ {datos['precio_kg']:>6.2f} €│{texto_disponible:>10}│{estado:<9}"
         print(f"{CIAN}║{RESET}{fila}{CIAN}║{RESET}")
     print(f"{CIAN}╚{'═'*ancho}╝{RESET}")
 
@@ -200,6 +230,7 @@ def mostrar_catalogo():
 # MOSTRAR CARRITO
 # ============================================================
 def mostrar_carrito():
+    '''Muestra los productos del carrito, subtotales, envío y total.'''
     ancho=62
     subtotal=sum(datos["subtotal"] for datos in carrito.values())
     envio=COSTE_ENVIO_DOMICILIO if tipo_compra=="1" and tipo_entrega=="2" else 0.0
@@ -223,7 +254,8 @@ def mostrar_carrito():
 
     for nombre,datos in carrito.items():
         cantidad=f"{datos['cantidad']}" if datos["tipo"] in("unidad","bolsa") else f"{datos['cantidad']:.3f}"
-        fila=f"{datos['codigo']:^6}│{nombre:<17}│{cantidad:>8}│ {datos['precio']:>6.2f} €│{datos['unidad']:^6}│ {datos['subtotal']:>7.2f} €"
+        nombre_formateado=formatear_linea(nombre,18)
+        fila=f"{datos['codigo']:^6}│{nombre_formateado}│{cantidad:>8}│ {datos['precio']:>6.2f} €│{datos['unidad']:^6}│ {datos['subtotal']:>7.2f} €"
         print(f"{CIAN}║{RESET}{fila}{CIAN}║{RESET}")
 
     print(f"{CIAN}╟{'─'*ancho}╢{RESET}")
@@ -241,6 +273,7 @@ def mostrar_carrito():
 # COMPROBAR PRESUPUESTO
 # ============================================================
 def supera_presupuesto(nombre,nuevo_producto,reemplazar=False):
+    '''Comprueba si una operación supera el presupuesto establecido.'''
     if presupuesto is None:
         return False
     total=0
@@ -263,6 +296,7 @@ def supera_presupuesto(nombre,nuevo_producto,reemplazar=False):
 # COMPRA POR PESO
 # ============================================================
 def seleccionar_por_peso(nombre):
+    '''Permite seleccionar un producto vendido por peso o por importe.'''
     datos=FRUTAS_DISPONIBLES[nombre]
     if datos["stock"]<=0:
         print("❌ Producto agotado.")
@@ -322,6 +356,7 @@ def seleccionar_por_peso(nombre):
 # COMPRA POR UNIDAD
 # ============================================================
 def seleccionar_por_unidad(nombre):
+    '''Permite seleccionar piezas individuales de un producto.'''
     datos=FRUTAS_DISPONIBLES[nombre]
     if not datos["pesos"]:
         print("❌ Producto agotado.")
@@ -362,6 +397,7 @@ def seleccionar_por_unidad(nombre):
 # STOCK
 # ============================================================
 def descontar_stock(nombre,producto):
+    '''Descuenta del stock la cantidad o piezas añadidas al carrito.'''
     datos=FRUTAS_DISPONIBLES[nombre]
     if datos["tipo"]=="peso":
         datos["stock"]-=producto["cantidad"]
@@ -370,6 +406,7 @@ def descontar_stock(nombre,producto):
             datos["pesos"].remove(peso)
 
 def devolver_stock(nombre,producto):
+    '''Devuelve al stock la cantidad o piezas de un producto.'''
     datos=FRUTAS_DISPONIBLES[nombre]
     if datos["tipo"]=="peso":
         datos["stock"]+=producto["cantidad"]
@@ -380,7 +417,8 @@ def devolver_stock(nombre,producto):
 # ============================================================
 # CANCELAR COMPRA
 # ============================================================
-def cancelar_compra():
+def restaurar_compra_cancelada():
+    '''Restaura todo el stock del carrito y vacía la compra cancelada.'''
     for nombre,producto in list(carrito.items()):
         if nombre!="👜 Bolsa":
             datos=FRUTAS_DISPONIBLES[nombre]
@@ -398,6 +436,7 @@ def cancelar_compra():
 # BOLSAS MANUALES
 # ============================================================
 def solicitar_bolsas():
+    '''Solicita y añade bolsas manuales respetando el presupuesto.'''
     carrito.pop("👜 Bolsa",None)
     while True:
         entrada=input("\n👜 ¿Cuántas bolsas deseas? ").strip()
@@ -424,6 +463,7 @@ def solicitar_bolsas():
 # TICKET
 # ============================================================
 def mostrar_ticket():
+    '''Muestra el ticket final con productos, totales y modalidad de compra.'''
     fecha=datetime.now()
     codigo=fecha.strftime("PED-%Y%m%d-%H%M%S")
     peso=sum(datos["peso"] for nombre,datos in carrito.items() if nombre!="👜 Bolsa")
@@ -441,22 +481,28 @@ def mostrar_ticket():
     print(f"{CIAN}║{RESET}{NEGRITA}{'🧾 TICKET DE COMPRA':^{ancho_con_emoji}}{RESET}{CIAN}║{RESET}")
     print(f"{CIAN}╠{'═'*ancho}╣{RESET}")
     print(f"{CIAN}║{RESET}{f' Pedido: {codigo}':<{ancho}}{CIAN}║{RESET}")
-    print(f"{CIAN}║{RESET}{f' Fecha: {fecha.strftime('%d/%m/%Y %H:%M:%S')}':<{ancho}}{CIAN}║{RESET}")
+    fecha_texto=f" Fecha: {fecha.strftime('%d/%m/%Y %H:%M:%S')}"
+    print(f"{CIAN}║{RESET}{fecha_texto:<{ancho}}{CIAN}║{RESET}")
     print(f"{CIAN}╠{'═'*ancho}╣{RESET}")
     encabezado=f"{'Cód.':^6}│{'Producto':^18}│{'Cant.':^8}│{'Precio':^9}│{'Ud.':^6}│{'Subtotal':^10}"
     print(f"{CIAN}║{RESET}{encabezado}{CIAN}║{RESET}")
     print(f"{CIAN}╠{'─'*ancho}╣{RESET}")
     for nombre,datos in carrito.items():
         cantidad=f"{datos['cantidad']}" if datos["tipo"] in("unidad","bolsa") else f"{datos['cantidad']:.3f}"
-        fila=f"{datos['codigo']:^6}│{nombre:<17}│{cantidad:>8}│ {datos['precio']:>6.2f} €│{datos['unidad']:^6}│ {datos['subtotal']:>7.2f} €"
+        nombre_formateado=formatear_linea(nombre,18)
+        fila=f"{datos['codigo']:^6}│{nombre_formateado}│{cantidad:>8}│ {datos['precio']:>6.2f} €│{datos['unidad']:^6}│ {datos['subtotal']:>7.2f} €"
         print(f"{CIAN}║{RESET}{fila}{CIAN}║{RESET}")
     print(f"{CIAN}╟{'─'*ancho}╢{RESET}")
     print(f"{CIAN}║{RESET}{f'Subtotal: {subtotal:.2f} €':>{ancho}}{CIAN}║{RESET}")
     if envio>0:
         print(f"{CIAN}║{RESET}{f'Envío: {envio:.2f} €':>{ancho}}{CIAN}║{RESET}")
     print(f"{CIAN}║{RESET}{NEGRITA}{f'TOTAL: {total:.2f} €':>{ancho}}{RESET}{CIAN}║{RESET}")
+    if presupuesto is not None:
+        cambio=round(presupuesto-total,2)
+        print(f"{CIAN}║{RESET}{f'Presupuesto: {presupuesto:.2f} €':>{ancho}}{CIAN}║{RESET}")
+        print(f"{CIAN}║{RESET}{f'Cambio: {cambio:.2f} €':>{ancho}}{CIAN}║{RESET}")
     print(f"{CIAN}╟{'─'*ancho}╢{RESET}")
-    print(f"{CIAN}║{RESET}{f'⚖️ Peso total del pedido: {peso:.3f} kg':<{ancho_con_emoji}}{CIAN}║{RESET}")
+    print(f"{CIAN}║{RESET}{f'⚖️ Peso total del pedido: {peso:.3f} kg':<{ancho_con_emoji + 2}}{CIAN}║{RESET}")
     if tipo_compra=="1" and tipo_entrega=="1":
         modalidad="🏪 Modalidad: Compra online - Recogida en tienda"
         entrega="🚚 Coste de entrega: 0.00 €"
@@ -478,6 +524,7 @@ def mostrar_ticket():
 # PROGRAMA PRINCIPAL
 # ============================================================
 def main():
+    '''Controla el flujo principal del programa y el menú de compra.'''
     global presupuesto,tipo_compra,tipo_entrega
     limpiar_pantalla()
     ancho=52
@@ -518,157 +565,158 @@ def main():
 
         match opcion:
             case "1":
-                #===========================================================
-                # AGREGAR PRODUCTO      agregar_producto()
-                #===========================================================
-                # PREGUNTA DE NEGOCIO: antes de elegir entrega, el presupuesto
-                # solo controla productos; envío y bolsas se revisan al finalizar.
-                nombre=buscar_fruta()
-                if nombre is not None:
-                    if FRUTAS_DISPONIBLES[nombre]["tipo"]=="peso":
-                        nuevo=seleccionar_por_peso(nombre)
-                    else:
-                        nuevo=seleccionar_por_unidad(nombre)
-
-                    if nuevo is None:
-                        input("↩️ Operación cancelada. Pulsa Enter para continuar.")
-                    elif nombre in carrito:
-                        actual=carrito[nombre]
-                        if nuevo["tipo"]=="peso":
-                            combinado={"codigo":actual["codigo"],"tipo":"peso","cantidad":actual["cantidad"]+nuevo["cantidad"],"peso":actual["peso"]+nuevo["peso"],"precio":nuevo["precio"],"unidad":"kg.","subtotal":round(actual["subtotal"]+nuevo["subtotal"],2)}
-                        else:
-                            combinado={"codigo":actual["codigo"],"tipo":"unidad","cantidad":actual["cantidad"]+nuevo["cantidad"],"pesos":actual["pesos"]+nuevo["pesos"],"peso":actual["peso"]+nuevo["peso"],"precio":nuevo["precio"],"unidad":"un.","subtotal":round(actual["subtotal"]+nuevo["subtotal"],2)}
-                        if supera_presupuesto(nombre,combinado,True):
-                            input("⚠️ La compra supera tu presupuesto. Pulsa Enter para continuar.")
-                        else:
-                            descontar_stock(nombre,nuevo)
-                            carrito[nombre]=combinado
-                            actualizar_bolsas_automaticas()
-                            input(f"{EXITO} {nombre} agregado correctamente. Pulsa Enter para continuar.{RESET}")
-                    elif supera_presupuesto(nombre,nuevo):
-                        input("⚠️ La compra supera tu presupuesto. Pulsa Enter para continuar.")
-                    else:
-                        descontar_stock(nombre,nuevo)
-                        carrito[nombre]=nuevo
-                        actualizar_bolsas_automaticas()
-                        input(f"{EXITO} {nombre} agregado correctamente. Pulsa Enter para continuar.{RESET}")
+                agregar_producto()
             case "2":
-                #===========================================================
-                # VER CARRITO       mostrar_carrito()
-                #===========================================================
                 mostrar_carrito()
                 input("\nPulsa Enter para continuar.")
             case "3":
-                #===========================================================
-                # ACTUALIZAR PRODUCTO       actualizar_producto()
-                #===========================================================
-                productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
-                if not productos:
-                    input(f"{ADVERTENCIA} El carrito está vacío. Pulsa Enter para continuar.{RESET}")
-                else:
-                    nombre=buscar_fruta()
-                    if nombre is not None:
-                        if nombre not in carrito:
-                            input("⚠️ Ese producto no está en el carrito. Pulsa Enter para continuar.")
-                        else:
-                            anterior=carrito[nombre]
-                            devolver_stock(nombre,anterior)
-                            if FRUTAS_DISPONIBLES[nombre]["tipo"]=="peso":
-                                nuevo=seleccionar_por_peso(nombre)
-                            else:
-                                nuevo=seleccionar_por_unidad(nombre)
-
-                            if nuevo is None:
-                                descontar_stock(nombre,anterior)
-                                input("↩️ Actualización cancelada. Pulsa Enter para continuar.")
-                            elif supera_presupuesto(nombre,nuevo,True):
-                                descontar_stock(nombre,anterior)
-                                input("⚠️ La nueva selección supera tu presupuesto. Pulsa Enter para continuar.")
-                            else:
-                                descontar_stock(nombre,nuevo)
-                                carrito[nombre]=nuevo
-                                actualizar_bolsas_automaticas()
-                                input(f"✅ {nombre} actualizado correctamente. Pulsa Enter para continuar.")
+                actualizar_producto()
             case "4":
-                #===========================================================
-                # ELIMINAR PRODUCTO      eliminar_producto()    
-                #===========================================================
-                productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
-                if not productos:
-                    input("⚠️ El carrito está vacío. Pulsa Enter para continuar.")
-                else:
-                    nombre=buscar_fruta()
-                    if nombre is not None:
-                        if nombre not in carrito:
-                            input("⚠️ Ese producto no está en tu carrito. Pulsa Enter para continuar.")
-                        else:
-                            confirmar=input(f"🗑️ ¿Eliminar {nombre}? (S/N): ").strip().lower()
-                            while confirmar not in("s","n"):
-                                confirmar=input("⚠️ Escribe S o N: ").strip().lower()
-                            if confirmar=="s":
-                                devolver_stock(nombre,carrito[nombre])
-                                del carrito[nombre]
-                                actualizar_bolsas_automaticas()
-                                input(f"✅ {nombre} eliminado y stock restaurado. Pulsa Enter para continuar.")
+                eliminar_producto()
             case "5":
-                #===========================================================
-                # FINALIZAR COMPRA      finalizar_compra()
-                #===========================================================
-                productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
-                if not productos:
-                    input("\n⚠️ El carrito está vacío. Pulsa Enter para continuar.")
-                    continue
-
-                limpiar_pantalla()
-                print(f"{NEGRITA}{VERDE}✅ FINALIZAR COMPRA{RESET}")
-
-                # PREGUNTA DE NEGOCIO: ¿una compra online debe pedir dirección,
-                # franja de entrega y método de pago antes de confirmarse?
-                if tipo_compra=="1":
-                    print("\n📦 MÉTODO DE ENTREGA")
-                    print("1. 🏪 Recogida en tienda - Gratis")
-                    print(f"2. 🚚 Envío a domicilio - {COSTE_ENVIO_DOMICILIO:.2f} €")
-                    tipo_entrega=input("Elige una opción: ").strip()
-                    while tipo_entrega not in("1","2"):
-                        tipo_entrega=input("⚠️ Escribe 1 o 2: ").strip()
-                else:
-                    tipo_entrega=None
-
-                if tipo_compra=="1" and tipo_entrega=="2":
-                    actualizar_bolsas_automaticas()
-                else:
-                    carrito.pop("👜 Bolsa",None)
-                    solicitar_bolsas()
-
-                if presupuesto is not None and calcular_total_final()>presupuesto:
-                    carrito.pop("👜 Bolsa",None)
-                    tipo_entrega=None
-                    input(f"\n⚠️ El pedido supera el presupuesto de {presupuesto:.2f} €. Pulsa Enter para continuar.")
-                    continue
-                mostrar_carrito()
-                respuesta=input("\n✅ ¿Confirmas la compra? (S/N): ").strip().lower()
-                while respuesta not in("s","n"):
-                    respuesta=input("⚠️ Escribe S o N: ").strip().lower()
-                if respuesta=="s":
-                    finalizar=True
-                else:
-                    carrito.pop("👜 Bolsa",None)
-                    tipo_entrega=None
-                    input("↩️ Finalización cancelada. Pulsa Enter para continuar.")
+                finalizar=finalizar_compra()
             case "6":
-                #===========================================================
-                # CANCELAR COMPRA       cancelar_compra()
-                #===========================================================
-                respuesta=input("❌ ¿Seguro que deseas cancelar toda la compra? (S/N): ").strip().lower()
-                while respuesta not in("s","n"):
-                    respuesta=input("⚠️ Escribe S o N: ").strip().lower()
-                if respuesta=="s":
-                    cancelar_compra()
+                if cancelar_compra():
                     return
             case _:
                 input("⚠️ Opción incorrecta. Pulsa Enter para continuar.")
 
     mostrar_ticket()
+
+def agregar_producto():
+    '''Gestiona la búsqueda, selección y agregado de un producto al carrito.'''
+    # PREGUNTA DE NEGOCIO: antes de elegir entrega, el presupuesto
+                # solo controla productos; envío y bolsas se revisan al finalizar.
+    nombre=buscar_fruta()
+    if nombre is not None:
+        if FRUTAS_DISPONIBLES[nombre]["tipo"]=="peso":
+            nuevo=seleccionar_por_peso(nombre)
+        else:
+            nuevo=seleccionar_por_unidad(nombre)
+
+        if nuevo is None:
+            input("↩️ Operación cancelada. Pulsa Enter para continuar.")
+        elif nombre in carrito:
+            actual=carrito[nombre]
+            if nuevo["tipo"]=="peso":
+                combinado={"codigo":actual["codigo"],"tipo":"peso","cantidad":actual["cantidad"]+nuevo["cantidad"],"peso":actual["peso"]+nuevo["peso"],"precio":nuevo["precio"],"unidad":"kg.","subtotal":round(actual["subtotal"]+nuevo["subtotal"],2)}
+            else:
+                combinado={"codigo":actual["codigo"],"tipo":"unidad","cantidad":actual["cantidad"]+nuevo["cantidad"],"pesos":actual["pesos"]+nuevo["pesos"],"peso":actual["peso"]+nuevo["peso"],"precio":nuevo["precio"],"unidad":"un.","subtotal":round(actual["subtotal"]+nuevo["subtotal"],2)}
+            if supera_presupuesto(nombre,combinado,True):
+                input("⚠️ La compra supera tu presupuesto. Pulsa Enter para continuar.")
+            else:
+                descontar_stock(nombre,nuevo)
+                carrito[nombre]=combinado
+                actualizar_bolsas_automaticas()
+                input(f"{EXITO} {nombre} agregado correctamente. Pulsa Enter para continuar.{RESET}")
+        elif supera_presupuesto(nombre,nuevo):
+            input("⚠️ La compra supera tu presupuesto. Pulsa Enter para continuar.")
+        else:
+            descontar_stock(nombre,nuevo)
+            carrito[nombre]=nuevo
+            actualizar_bolsas_automaticas()
+            input(f"{EXITO} {nombre} agregado correctamente. Pulsa Enter para continuar.{RESET}")
+
+def actualizar_producto():
+    '''Modifica un producto del carrito conservando la coherencia del stock.'''
+    productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
+    if not productos:
+        input(f"{ADVERTENCIA} El carrito está vacío. Pulsa Enter para continuar.{RESET}")
+    else:
+        nombre=buscar_fruta()
+        if nombre is not None:
+            if nombre not in carrito:
+                input("⚠️ Ese producto no está en el carrito. Pulsa Enter para continuar.")
+            else:
+                anterior=carrito[nombre]
+                devolver_stock(nombre,anterior)
+                if FRUTAS_DISPONIBLES[nombre]["tipo"]=="peso":
+                    nuevo=seleccionar_por_peso(nombre)
+                else:
+                    nuevo=seleccionar_por_unidad(nombre)
+
+                if nuevo is None:
+                    descontar_stock(nombre,anterior)
+                    input("↩️ Actualización cancelada. Pulsa Enter para continuar.")
+                elif supera_presupuesto(nombre,nuevo,True):
+                    descontar_stock(nombre,anterior)
+                    input("⚠️ La nueva selección supera tu presupuesto. Pulsa Enter para continuar.")
+                else:
+                    descontar_stock(nombre,nuevo)
+                    carrito[nombre]=nuevo
+                    actualizar_bolsas_automaticas()
+                    input(f"✅ {nombre} actualizado correctamente. Pulsa Enter para continuar.")
+
+def eliminar_producto():
+    '''Elimina un producto del carrito y devuelve su stock.'''
+    productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
+    if not productos:
+        input("⚠️ El carrito está vacío. Pulsa Enter para continuar.")
+    else:
+        nombre=buscar_fruta()
+        if nombre is not None:
+            if nombre not in carrito:
+                input("⚠️ Ese producto no está en tu carrito. Pulsa Enter para continuar.")
+            else:
+                confirmar=input(f"🗑️ ¿Eliminar {nombre}? (S/N): ").strip().lower()
+                while confirmar not in("s","n"):
+                    confirmar=input("⚠️ Escribe S o N: ").strip().lower()
+                if confirmar=="s":
+                    devolver_stock(nombre,carrito[nombre])
+                    del carrito[nombre]
+                    actualizar_bolsas_automaticas()
+                    input(f"✅ {nombre} eliminado y stock restaurado. Pulsa Enter para continuar.")
+
+def finalizar_compra():
+    '''Gestiona entrega, bolsas, presupuesto y confirmación final de la compra.'''
+    global tipo_entrega
+    productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
+    if not productos:
+        input("\n⚠️ El carrito está vacío. Pulsa Enter para continuar.")
+        return False
+    limpiar_pantalla()
+    print(f"{NEGRITA}{VERDE}✅ FINALIZAR COMPRA{RESET}")
+    # PREGUNTA DE NEGOCIO: ¿una compra online debe pedir dirección,
+    # franja de entrega y método de pago antes de confirmarse?
+    if tipo_compra=="1":
+        print("\n📦 MÉTODO DE ENTREGA")
+        print("1. 🏪 Recogida en tienda - Gratis")
+        print(f"2. 🚚 Envío a domicilio - {COSTE_ENVIO_DOMICILIO:.2f} €")
+        tipo_entrega=input("Elige una opción: ").strip()
+        while tipo_entrega not in("1","2"):
+            tipo_entrega=input("⚠️ Escribe 1 o 2: ").strip()
+    else:
+        tipo_entrega=None
+    if tipo_compra=="1" and tipo_entrega=="2":
+        actualizar_bolsas_automaticas()
+    else:
+        carrito.pop("👜 Bolsa",None)
+        solicitar_bolsas()
+    if presupuesto is not None and calcular_total_final()>presupuesto:
+        carrito.pop("👜 Bolsa",None)
+        tipo_entrega=None
+        input(f"\n⚠️ El pedido supera el presupuesto de {presupuesto:.2f} €. Pulsa Enter para continuar.")
+        return False
+    mostrar_carrito()
+    respuesta=input("\n✅ ¿Confirmas la compra? (S/N): ").strip().lower()
+    while respuesta not in("s","n"):
+        respuesta=input("⚠️ Escribe S o N: ").strip().lower()
+    if respuesta=="s":
+        return True
+    carrito.pop("👜 Bolsa",None)
+    tipo_entrega=None
+    input("↩️ Finalización cancelada. Pulsa Enter para continuar.")
+    return False
+
+def cancelar_compra():
+    '''Solicita confirmación y cancela toda la compra si el usuario acepta.'''
+    respuesta=input("❌ ¿Seguro que deseas cancelar toda la compra? (S/N): ").strip().lower()
+    while respuesta not in("s","n"):
+        respuesta=input("⚠️ Escribe S o N: ").strip().lower()
+    if respuesta=="s":
+        restaurar_compra_cancelada()
+        return True
+    return False
 
 # ============================================================
 # INICIAR PROGRAMA
