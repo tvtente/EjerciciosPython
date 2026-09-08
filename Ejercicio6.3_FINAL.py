@@ -20,6 +20,7 @@ ADVERTENCIA=f"{AMARILLO}⚠️"
 ERROR=f"{ROJO}❌"
 EXITO=f"{VERDE}✅"
 INFO=f"{CIAN}ℹ️"
+VOLVER_MENU="__VOLVER_MENU__"
 
 # ============================================================
 # REGLAS DE NEGOCIO
@@ -111,17 +112,16 @@ def mostrar_menu_pedido():
     print(f"{CIAN}╠{'═'*ancho}╣{RESET}")
     opciones=(
         ("1", "➕ Agregar producto", VERDE),
-        ("2", "🔎 Ver carrito", CIAN),
-        ("3", "🔧 Actualizar producto", AMARILLO),
-        ("4", "❌ Eliminar producto", ROJO),
-        ("5", "✅ Finalizar compra", VERDE),
-        ("6", "⛔ Cancelar compra", ROJO),
+        ("2", "🔧 Actualizar producto", AMARILLO),
+        ("3", "❌ Eliminar producto", ROJO),
+        ("4", "✅ Finalizar compra", VERDE),
+        ("5", "⛔ Cancelar compra", ROJO),
     )
     for numero, texto, color in opciones:
         linea=f" {numero}. {texto}"
         print(f"{CIAN}║{RESET}{color}{linea:<{ancho_con_emoji}}{RESET}{CIAN}║{RESET}")
     print(f"{CIAN}╟{'─'*ancho}╢{RESET}")
-    print(f"{CIAN}║{RESET}{'👉 Selecciona una opción del 1 al 6':<{ancho_con_emoji}}{CIAN}║{RESET}")
+    print(f"{CIAN}║{RESET}{'👉 Selecciona una opción del 1 al 5':<{ancho_con_emoji}}{CIAN}║{RESET}")
     print(f"{CIAN}╚{'═'*ancho}╝{RESET}")
     return input(f"{CIAN}👉 Elige una opción: {RESET}").strip()
 
@@ -159,11 +159,20 @@ def buscar_fruta():
     while opcion not in("0","1","2"):
         opcion=input("⚠️ Escribe 1, 2 o 0: ").strip()
     if opcion=="0":
-        return None
+        return VOLVER_MENU
+
+    limpiar_pantalla()
+    mostrar_catalogo()
+    mostrar_carrito()
+
     if opcion=="1":
-        codigo=input("Código del producto (0 volver): ").strip()
+        print(f"\n{CIAN}╔{'═'*ancho}╗{RESET}")
+        print(f"{CIAN}║{RESET}{NEGRITA}{'🔢 BÚSQUEDA POR CÓDIGO':^{ancho_con_emoji}}{RESET}{CIAN}║{RESET}")
+        print(f"{CIAN}║{RESET}{'Escribe 0 para volver.':^{ancho}}{CIAN}║{RESET}")
+        print(f"{CIAN}╚{'═'*ancho}╝{RESET}")
+        codigo=input(f"{CIAN}🔢 Código del producto: {RESET}").strip()
         if codigo=="0":
-            return None
+            return VOLVER_MENU
         codigo_normalizado=codigo.zfill(2) if codigo.isdigit() else codigo
         for nombre,datos in FRUTAS_DISPONIBLES.items():
             if datos["codigo"]==codigo_normalizado:
@@ -171,24 +180,41 @@ def buscar_fruta():
         print("⚠️ Código inexistente.")
         input("Pulsa Enter para continuar.")
         return None
-    texto=input("Nombre de la fruta (0 volver): ").strip()
+    print(f"\n{CIAN}╔{'═'*ancho}╗{RESET}")
+    print(f"{CIAN}║{RESET}{NEGRITA}{'🔤 BÚSQUEDA POR NOMBRE':^{ancho_con_emoji}}{RESET}{CIAN}║{RESET}")
+    print(f"{CIAN}║{RESET}{'Escribe 0 para volver.':^{ancho}}{CIAN}║{RESET}")
+    print(f"{CIAN}╚{'═'*ancho}╝{RESET}")
+    texto=input(f"{CIAN}🔤 Nombre de la fruta: {RESET}").strip()
     if texto=="0":
-        return None
+        return VOLVER_MENU
     buscado=unicodedata.normalize("NFD",texto.casefold())
     buscado="".join(c for c in buscado if unicodedata.category(c)!="Mn")
     coincidencias=[]
     for nombre in FRUTAS_DISPONIBLES:
         nombre_normalizado=unicodedata.normalize("NFD",nombre.casefold())
         nombre_normalizado="".join(c for c in nombre_normalizado if unicodedata.category(c)!="Mn")
-        if buscado==nombre_normalizado or buscado in nombre_normalizado:
+        nombre_sin_emoji="".join(c for c in nombre_normalizado if c.isalnum() or c.isspace()).strip()
+        if buscado==nombre_sin_emoji:
+            return nombre
+        if buscado in nombre_sin_emoji:
             coincidencias.append(nombre)
     if len(coincidencias)==1:
-        return coincidencias[0]
+        sugerencia=coincidencias[0]
+        respuesta=input(f"{INFO} ¿Te refieres a {sugerencia}? (S/N): {RESET}").strip().lower()
+        while respuesta not in("s","n"):
+            respuesta=input(f"{ADVERTENCIA} Escribe S o N: {RESET}").strip().lower()
+        if respuesta=="s":
+            return sugerencia
+        print("↩️ Búsqueda cancelada.")
+        input("Pulsa Enter para continuar.")
+        return None
     if len(coincidencias)>1:
         print("\nCoincidencias:")
         for i,nombre in enumerate(coincidencias,1):
             print(f"{i}. {nombre}")
-        opcion=input("Selecciona una opción (0 cancelar): ").strip()
+        opcion=input("Selecciona una opción (0 volver): ").strip()
+        if opcion=="0":
+            return VOLVER_MENU
         if opcion.isdigit() and 1<=int(opcion)<=len(coincidencias):
             return coincidencias[int(opcion)-1]
         return None
@@ -316,27 +342,27 @@ def seleccionar_por_peso(nombre):
     print(f"{AMARILLO}╠{'─'*9}┼{'─'*(ancho-10)}╣{RESET}")
     print(f"{AMARILLO}║{RESET}{'1':^9}│{' Introducir kilos':<{ancho-10}}{AMARILLO}║{RESET}")
     print(f"{AMARILLO}║{RESET}{'2':^9}│{' Introducir importe en euros':<{ancho-10}}{AMARILLO}║{RESET}")
-    print(f"{AMARILLO}║{RESET}{'0':^9}│{' Cancelar':<{ancho-10}}{AMARILLO}║{RESET}")
+    print(f"{AMARILLO}║{RESET}{'0':^9}│{' Volver al menú principal':<{ancho-10}}{AMARILLO}║{RESET}")
     print(f"{AMARILLO}╚{'═'*ancho}╝{RESET}")
     opcion=input(f"{AMARILLO}👉 Elige una opción: {RESET}").strip()
     while opcion not in("0","1","2"):
         opcion=input("⚠️ Escribe 1, 2 o 0: ").strip()
     if opcion=="0":
-        return None
+        return VOLVER_MENU
     while True:
         if opcion=="1":
-            entrada=input("¿Cuántos kilos deseas? (0 cancelar): ").strip()
+            entrada=input("¿Cuántos kilos deseas? (0 volver): ").strip()
             if entrada=="0":
-                return None
+                return VOLVER_MENU
             if not re.fullmatch(PATRON_DECIMAL,entrada):
                 print("⚠️ Introduce una cantidad válida.")
                 continue
             cantidad=float(entrada.replace(",","."))
             subtotal=round(cantidad*datos["precio_kg"],2)
         else:
-            entrada=input("¿Cuántos euros deseas gastar? (0 cancelar): ").strip()
+            entrada=input("¿Cuántos euros deseas gastar? (0 volver): ").strip()
             if entrada=="0":
-                return None
+                return VOLVER_MENU
             if not re.fullmatch(PATRON_DECIMAL,entrada):
                 print("⚠️ Introduce un importe válido.")
                 continue
@@ -372,10 +398,16 @@ def seleccionar_por_unidad(nombre):
                 estado=f"{peso:.3f} kg -> {peso*datos['precio_kg']:.2f} €"
             print(f"[{i}] {estado}")
         print("-"*55)
-        print("0. Terminar selección")
-        entrada=input("Selecciona una pieza: ").strip()
+        print("S. Confirmar selección")
+        print("0. Volver al menú principal")
+        entrada=input("Selecciona una pieza: ").strip().lower()
         if entrada=="0":
-            break
+            return VOLVER_MENU
+        if entrada=="s":
+            if seleccionados:
+                break
+            print("⚠️ Selecciona al menos una pieza antes de confirmar.")
+            continue
         if not entrada.isdigit():
             print("⚠️ Introduce el número de una pieza.")
             continue
@@ -387,8 +419,6 @@ def seleccionar_por_unidad(nombre):
             print("⚠️ Esa pieza ya está seleccionada.")
             continue
         seleccionados.append(indice)
-    if not seleccionados:
-        return None
     pesos=[datos["pesos"][i] for i in seleccionados]
     peso_total=sum(pesos)
     return {"codigo":datos["codigo"],"tipo":"unidad","cantidad":len(pesos),"pesos":pesos,"peso":peso_total,"precio":datos["precio_kg"],"unidad":"un.","subtotal":round(peso_total*datos["precio_kg"],2)}
@@ -439,13 +469,15 @@ def solicitar_bolsas():
     '''Solicita y añade bolsas manuales respetando el presupuesto.'''
     carrito.pop("👜 Bolsa",None)
     while True:
-        entrada=input("\n👜 ¿Cuántas bolsas deseas? ").strip()
+        entrada=input("\n👜 Bolsas (Enter: ninguna | 0 volver): ").strip()
+        if entrada=="":
+            return False
+        if entrada=="0":
+            return True
         if not entrada.isdigit():
             print("⚠️ Introduce un número entero.")
             continue
         cantidad=int(entrada)
-        if cantidad==0:
-            return
         bolsa={"codigo":"B01","tipo":"bolsa","cantidad":cantidad,"peso":0,"precio":PRECIO_BOLSA,"unidad":"un.","subtotal":round(cantidad*PRECIO_BOLSA,2)}
         if presupuesto is not None:
             subtotal=sum(datos["subtotal"] for datos in carrito.values())
@@ -457,7 +489,7 @@ def solicitar_bolsas():
                 print(f"⚠️ Supera tu presupuesto. Disponible: {disponible:.2f} €.")
                 continue
         carrito["👜 Bolsa"]=bolsa
-        return
+        return False
 
 # ============================================================
 # TICKET
@@ -565,35 +597,61 @@ def main():
 
         match opcion:
             case "1":
-                agregar_producto()
+                while True:
+                    limpiar_pantalla()
+                    actualizar_bolsas_automaticas()
+                    mostrar_catalogo()
+                    mostrar_carrito()
+                    print(f"{NEGRITA}{VERDE}➕ AGREGAR PRODUCTO{RESET}")
+                    if agregar_producto():
+                        break
             case "2":
-                mostrar_carrito()
-                input("\nPulsa Enter para continuar.")
+                while True:
+                    limpiar_pantalla()
+                    actualizar_bolsas_automaticas()
+                    mostrar_catalogo()
+                    mostrar_carrito()
+                    if actualizar_producto():
+                        break
             case "3":
-                actualizar_producto()
+                while True:
+                    limpiar_pantalla()
+                    actualizar_bolsas_automaticas()
+                    mostrar_catalogo()
+                    mostrar_carrito()
+                    if eliminar_producto():
+                        break
             case "4":
-                eliminar_producto()
-            case "5":
                 finalizar=finalizar_compra()
-            case "6":
+            case "5":
                 if cancelar_compra():
                     return
             case _:
                 input("⚠️ Opción incorrecta. Pulsa Enter para continuar.")
 
-    mostrar_ticket()
+    respuesta=input("\n🧾 ¿Deseas generar el ticket de compra? (S/N): ").strip().lower()
+    while respuesta not in("s","n"):
+        respuesta=input("⚠️ Escribe S o N: ").strip().lower()
+    if respuesta=="s":
+        mostrar_ticket()
+    else:
+        print("\n👋 ¡Compra finalizada! Gracias por tu compra.")
 
 def agregar_producto():
     '''Gestiona la búsqueda, selección y agregado de un producto al carrito.'''
     # PREGUNTA DE NEGOCIO: antes de elegir entrega, el presupuesto
                 # solo controla productos; envío y bolsas se revisan al finalizar.
     nombre=buscar_fruta()
+    if nombre==VOLVER_MENU:
+        return True
     if nombre is not None:
         if FRUTAS_DISPONIBLES[nombre]["tipo"]=="peso":
             nuevo=seleccionar_por_peso(nombre)
         else:
             nuevo=seleccionar_por_unidad(nombre)
 
+        if nuevo==VOLVER_MENU:
+            return True
         if nuevo is None:
             input("↩️ Operación cancelada. Pulsa Enter para continuar.")
         elif nombre in carrito:
@@ -616,14 +674,26 @@ def agregar_producto():
             carrito[nombre]=nuevo
             actualizar_bolsas_automaticas()
             input(f"{EXITO} {nombre} agregado correctamente. Pulsa Enter para continuar.{RESET}")
+    return False
 
 def actualizar_producto():
     '''Modifica un producto del carrito conservando la coherencia del stock.'''
+    ancho=58
+    print(f"\n{AMARILLO}╔{'═'*ancho}╗{RESET}")
+    print(f"{AMARILLO}║{RESET}{NEGRITA}{formatear_linea('🔧 ACTUALIZAR PRODUCTO', ancho, '^')}{RESET}{AMARILLO}║{RESET}")
     productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
     if not productos:
-        input(f"{ADVERTENCIA} El carrito está vacío. Pulsa Enter para continuar.{RESET}")
+        print(f"{AMARILLO}╠{'═'*ancho}╣{RESET}")
+        print(f"{AMARILLO}║{RESET}{formatear_linea('⚠️ CARRITO VACÍO', ancho + 1, '^')}{AMARILLO}║{RESET}")
+        print(f"{AMARILLO}║{RESET}{formatear_linea('No hay productos que actualizar.', ancho, '^')}{AMARILLO}║{RESET}")
+        print(f"{AMARILLO}╚{'═'*ancho}╝{RESET}")
+        input(f"{AMARILLO}👉 Pulsa Enter para volver al menú principal.{RESET}")
+        return True
     else:
+        print(f"{AMARILLO}╚{'═'*ancho}╝{RESET}")
         nombre=buscar_fruta()
+        if nombre==VOLVER_MENU:
+            return True
         if nombre is not None:
             if nombre not in carrito:
                 input("⚠️ Ese producto no está en el carrito. Pulsa Enter para continuar.")
@@ -635,6 +705,9 @@ def actualizar_producto():
                 else:
                     nuevo=seleccionar_por_unidad(nombre)
 
+                if nuevo==VOLVER_MENU:
+                    descontar_stock(nombre,anterior)
+                    return True
                 if nuevo is None:
                     descontar_stock(nombre,anterior)
                     input("↩️ Actualización cancelada. Pulsa Enter para continuar.")
@@ -646,14 +719,26 @@ def actualizar_producto():
                     carrito[nombre]=nuevo
                     actualizar_bolsas_automaticas()
                     input(f"✅ {nombre} actualizado correctamente. Pulsa Enter para continuar.")
+    return False
 
 def eliminar_producto():
     '''Elimina un producto del carrito y devuelve su stock.'''
+    ancho=58
+    print(f"\n{ROJO}╔{'═'*ancho}╗{RESET}")
+    print(f"{ROJO}║{RESET}{NEGRITA}{formatear_linea('❌ ELIMINAR PRODUCTO', ancho, '^')}{RESET}{ROJO}║{RESET}")
     productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
     if not productos:
-        input("⚠️ El carrito está vacío. Pulsa Enter para continuar.")
+        print(f"{ROJO}╠{'═'*ancho}╣{RESET}")
+        print(f"{ROJO}║{RESET}{formatear_linea('⚠️ CARRITO VACÍO', ancho + 1, '^')}{ROJO}║{RESET}")
+        print(f"{ROJO}║{RESET}{formatear_linea('No hay productos que eliminar.', ancho, '^')}{ROJO}║{RESET}")
+        print(f"{ROJO}╚{'═'*ancho}╝{RESET}")
+        input(f"{ROJO}👉 Pulsa Enter para volver al menú principal.{RESET}")
+        return True
     else:
+        print(f"{ROJO}╚{'═'*ancho}╝{RESET}")
         nombre=buscar_fruta()
+        if nombre==VOLVER_MENU:
+            return True
         if nombre is not None:
             if nombre not in carrito:
                 input("⚠️ Ese producto no está en tu carrito. Pulsa Enter para continuar.")
@@ -666,15 +751,25 @@ def eliminar_producto():
                     del carrito[nombre]
                     actualizar_bolsas_automaticas()
                     input(f"✅ {nombre} eliminado y stock restaurado. Pulsa Enter para continuar.")
+    return False
 
 def finalizar_compra():
     '''Gestiona entrega, bolsas, presupuesto y confirmación final de la compra.'''
     global tipo_entrega
+    limpiar_pantalla()
+    mostrar_catalogo()
+    mostrar_carrito()
     productos=[nombre for nombre in carrito if nombre!="👜 Bolsa"]
     if not productos:
-        input("\n⚠️ El carrito está vacío. Pulsa Enter para continuar.")
+        ancho=58
+        print(f"\n{VERDE}╔{'═'*ancho}╗{RESET}")
+        print(f"{VERDE}║{RESET}{NEGRITA}{formatear_linea('✅ FINALIZAR COMPRA', ancho, '^')}{RESET}{VERDE}║{RESET}")
+        print(f"{VERDE}╠{'═'*ancho}╣{RESET}")
+        print(f"{VERDE}║{RESET}{formatear_linea('⚠️ CARRITO VACÍO', ancho + 1, '^')}{VERDE}║{RESET}")
+        print(f"{VERDE}║{RESET}{formatear_linea('No hay productos que finalizar.', ancho, '^')}{VERDE}║{RESET}")
+        print(f"{VERDE}╚{'═'*ancho}╝{RESET}")
+        input(f"{VERDE}👉 Pulsa Enter para volver al menú principal.{RESET}")
         return False
-    limpiar_pantalla()
     print(f"{NEGRITA}{VERDE}✅ FINALIZAR COMPRA{RESET}")
     # PREGUNTA DE NEGOCIO: ¿una compra online debe pedir dirección,
     # franja de entrega y método de pago antes de confirmarse?
@@ -682,21 +777,30 @@ def finalizar_compra():
         print("\n📦 MÉTODO DE ENTREGA")
         print("1. 🏪 Recogida en tienda - Gratis")
         print(f"2. 🚚 Envío a domicilio - {COSTE_ENVIO_DOMICILIO:.2f} €")
+        print("0. ↩️ Volver al menú principal")
         tipo_entrega=input("Elige una opción: ").strip()
-        while tipo_entrega not in("1","2"):
-            tipo_entrega=input("⚠️ Escribe 1 o 2: ").strip()
+        while tipo_entrega not in("0","1","2"):
+            tipo_entrega=input("⚠️ Escribe 0, 1 o 2: ").strip()
+        if tipo_entrega=="0":
+            tipo_entrega=None
+            return False
     else:
         tipo_entrega=None
     if tipo_compra=="1" and tipo_entrega=="2":
         actualizar_bolsas_automaticas()
     else:
         carrito.pop("👜 Bolsa",None)
-        solicitar_bolsas()
+        if solicitar_bolsas():
+            tipo_entrega=None
+            return False
     if presupuesto is not None and calcular_total_final()>presupuesto:
         carrito.pop("👜 Bolsa",None)
         tipo_entrega=None
         input(f"\n⚠️ El pedido supera el presupuesto de {presupuesto:.2f} €. Pulsa Enter para continuar.")
         return False
+
+    limpiar_pantalla()
+    print(f"{NEGRITA}{VERDE}✅ RESUMEN FINAL DEL PEDIDO{RESET}")
     mostrar_carrito()
     respuesta=input("\n✅ ¿Confirmas la compra? (S/N): ").strip().lower()
     while respuesta not in("s","n"):
