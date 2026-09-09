@@ -3,6 +3,7 @@ from reportlab.pdfgen import canvas
 from datetime import datetime
 import Ejercicio63RaimonConstantes as const
 import Ejercicio63RaimonUtilidades as util
+import Ejercicio63RaimonFuncionalidades as func
 
 FRUTAS = {
     "cereza": ("🍒", "Cereza", 4.50),
@@ -21,6 +22,8 @@ FRUTAS = {
     "sandia": ("🍉", "Sandía", 0.95),
     "uva": ("🍇", "Uva", 2.90),
 }
+
+const.FRUTAS = FRUTAS
 
 # ==========================================
 # 1. CONFIGURACIÓN Y CONSTANTES DEL SISTEMA
@@ -360,6 +363,16 @@ def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
     print(f"{const.VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
     print(f"🖨️  Ticket enviado a la impresora...")
 
+
+# Las funciones del flujo se toman del módulo de func.
+mostrar_cesta = func.mostrar_cesta
+procesar_comando_global = func.procesar_comando_global
+buscar_fruta = func.buscar_fruta
+solicitar_kilos = func.solicitar_kilos
+actualizar_cesta = func.actualizar_cesta
+mostrar_ticket = func.mostrar_ticket
+procesar_pago = func.procesar_pago
+crear_pdf = func.crear_pdf
 
 # ==========================================
 # 3. BUCLE PRINCIPAL DE LA APLICACIÓN
