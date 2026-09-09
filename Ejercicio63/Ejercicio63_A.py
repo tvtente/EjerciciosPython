@@ -22,7 +22,7 @@ def main():
         print(f"{CIAN}║{RESET}{'1':^9}│{' 🥬 Gestión de frutería':<{ancho - 11}}{CIAN}║{RESET}")
         print(f"{CIAN}║{RESET}{'2':^9}│{' 🌐 Compra online':<{ancho - 11}}{CIAN}║{RESET}")
         print(f"{CIAN}║{RESET}{'3':^9}│{' 🏪 Compra en tienda':<{ancho - 11}}{CIAN}║{RESET}")
-        print(f"{CIAN}║{RESET}{'0':^9}│{' Salir':<{ancho - 11}}{CIAN}║{RESET}")
+        print(f"{CIAN}║{RESET}{'0':^9}│{' Salir':<{ancho - 10}}{CIAN}║{RESET}")
         print(f"{CIAN}╚{'═' * ancho}╝{RESET}")
         opcion_inicio = input(f"{CIAN}👉 Elige una opción: {RESET}").strip()
 

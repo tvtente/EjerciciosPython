@@ -5,6 +5,8 @@ from reportlab.pdfgen import canvas
 from . import Ejercicio63RaimonConstantes as const
 from . import Ejercicio63RaimonUtilidades as util
 from . import Ejercicio63RaimonFuncionalidades as func
+from .domain.catalogo import buscar_fruta
+from .domain.carrito import actualizar_cesta as actualizar_cesta_dominio
 # Compatibilidad de 'select' según el sistema operativo (Windows vs. Linux/Mac)
 try:
     import select
@@ -20,28 +22,18 @@ except ImportError:
 # ------------------------------------------------------------------
 
 def actualizar_cesta(cesta, clave, nombre_bonito, icono, precio, kg):
-    if clave in cesta:
-        # Actualización de valores acumulados en memoria
-        nuevo_kg = round(cesta[clave]["kg"] + kg, 3)
-        if nuevo_kg <= 0:
-            # Borrado individual en memoria si el peso queda en 0 o menos
-            del cesta[clave]
-        else:
-            cesta[clave]["kg"] = nuevo_kg
-            cesta[clave]["total"] = round(nuevo_kg * precio, 2)
-    elif kg > 0:
-        # Alta de nuevo elemento en memoria
-        cesta[clave] = {
-            "icono": icono,
-            "nombre": nombre_bonito,
-            "pvp": precio,
-            "kg": round(kg, 3),
-            "total": round(precio * kg, 2)
-        }
+    actualizar_cesta_dominio(
+        cesta,
+        clave,
+        nombre_bonito,
+        icono,
+        precio,
+        kg
+    )
 
 
 def agregar_producto(cesta, fruta):
-    coincidencias = func.buscar_fruta(fruta)
+    coincidencias = buscar_fruta(fruta)
     if len(coincidencias) == 1:
         clave = coincidencias[0]
         icono, nombre_bonito, precio = const.FRUTAS[clave]
@@ -85,18 +77,6 @@ def agregar_producto(cesta, fruta):
         )
         return False
 
-def mostrar_cesta(cesta):
-    if cesta:
-        print("🛒 CESTA ACTUAL:")
-        total_provisional = sum(item["total"] for item in cesta.values())
-        for item in cesta.values():
-            kg_txt = f"{item['kg']:.2f}".replace(".00", "").replace(".", ",")
-            tot_txt = util.formato_precio(item['total'])
-            print(f"   • {item['icono']} {item['nombre']:<10}: {kg_txt:>5} Kg  ->  {tot_txt:>9}")
-        tot_prov_txt = util.formato_precio(total_provisional)
-        print("-" * 46)
-        print(f"   {'TOTAL PROVISIONAL':<26} ->  {tot_prov_txt:>9}")
-        print("-" * 46 + "\n")
 # ------------------------------------------------------------------
 # 3. BORRADO TOTAL DEL PEDIDO Y COMANDOS GLOBALES
 # ------------------------------------------------------------------

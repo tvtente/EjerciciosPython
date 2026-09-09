@@ -10,6 +10,8 @@ from .Ejercicio63RaimonUtilidades import (
     pedir_confirmacion,
     formato_precio
 )
+from .domain.catalogo import buscar_fruta as buscar_fruta_dominio
+from .domain.carrito import actualizar_cesta as actualizar_cesta_dominio
 
 
 # ==========================================
@@ -61,94 +63,9 @@ def mostrar_cesta(cesta):
         print("-" * 46 + "\n")
 
 
-def procesar_comando_global(fruta, cesta):
-    """Procesa los comandos /, % y entrada vacía."""
-
-    if fruta == "/":
-
-        if cesta:
-
-            if pedir_confirmacion(
-                "¿Seguro que quieres CANCELAR "
-                "este pedido y empezar uno nuevo?"
-            ):
-                cesta.clear()
-
-                mostrar_mensaje(
-                    "Pedido cancelado. "
-                    "Iniciando nueva cesta...",
-                    "info",
-                    segundos=2
-                )
-
-                return "CANCELAR"
-
-            return "CONTINUAR"
-
-        mostrar_mensaje(
-            "La cesta ya está vacía",
-            "warning"
-        )
-
-        return "CONTINUAR"
-
-
-    elif fruta == "%":
-
-        if cesta:
-
-            if pedir_confirmacion(
-                f"{const.AMARILLO}¿Generar el ticket final y cobrar?{const.RESET}"
-            ):
-                return "TICKET"
-
-            return "CONTINUAR"
-
-        mostrar_mensaje(
-            "La cesta está vacía. "
-            "Añade al menos una fruta",
-            "warning"
-        )
-
-        return "CONTINUAR"
-
-
-    elif fruta == "":
-
-        mostrar_mensaje(
-            "Usa '%' para generar el ticket "
-            "o '/' para cancelar el pedido",
-            "info"
-        )
-
-        return "CONTINUAR"
-
-
-    return "NINGUNA"
-
-
 def buscar_fruta(fruta):
     """Busca frutas que coincidan con el texto introducido."""
-
-    clave_entrada = (
-        fruta.lower()
-        .replace("á", "a")
-        .replace("é", "e")
-        .replace("í", "i")
-        .replace("ó", "o")
-        .replace("ú", "u")
-    )
-
-    coincidencias = []
-
-    if clave_entrada != "":
-
-        for clave in const.FRUTAS:
-
-            if clave.startswith(clave_entrada):
-                coincidencias.append(clave)
-
-    return coincidencias
+    return buscar_fruta_dominio(fruta)
 
 
 def solicitar_kilos(kg_acumulados, nombre_bonito):
@@ -320,29 +237,14 @@ def actualizar_cesta(
     kg
 ):
     """Añade, modifica o elimina un producto."""
-
-    total_producto = precio * kg
-
-
-    if clave in cesta:
-
-        cesta[clave]["kg"] += kg
-
-        cesta[clave]["total"] += total_producto
-
-        if cesta[clave]["kg"] <= 0:
-            del cesta[clave]
-
-
-    elif kg > 0:
-
-        cesta[clave] = {
-            "icono": icono,
-            "nombre": nombre_bonito,
-            "pvp": precio,
-            "kg": kg,
-            "total": total_producto
-        }
+    actualizar_cesta_dominio(
+        cesta,
+        clave,
+        nombre_bonito,
+        icono,
+        precio,
+        kg
+    )
 
 
 # ==========================================
