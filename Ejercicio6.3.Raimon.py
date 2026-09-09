@@ -358,13 +358,13 @@ def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
 
     c.drawText(text_object)
     c.save()
-    print(f"{VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
+    print(f"{const.VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
     print(f"🖨️  Ticket enviado a la impresora...")
 
 
 # ==========================================
 # 3. BUCLE PRINCIPAL DE LA APLICACIÓN
-# ==========================================
+# ==========================================º
 
 # ┌──────────────────────────────────────────────────────────┐
 # │ FUNCIÓN:     ejecutar_tpv()                              │
