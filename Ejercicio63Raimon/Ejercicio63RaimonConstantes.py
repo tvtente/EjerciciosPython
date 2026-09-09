@@ -3,7 +3,7 @@
 # 1. CONSTANTES DEL SISTEMA
 # ==========================================
 
-from Ejercicio63RaimonBDD import FRUTAS
+from .Ejercicio63RaimonBDD import FRUTAS
 
 
 BOLD            = "\033[1m"

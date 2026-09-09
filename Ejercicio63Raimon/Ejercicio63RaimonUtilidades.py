@@ -8,7 +8,7 @@ try:
     import msvcrt
 except ImportError:
     msvcrt = None
-import Ejercicio63RaimonConstantes as const
+from . import Ejercicio63RaimonConstantes as const
 
 
 # ==========================================

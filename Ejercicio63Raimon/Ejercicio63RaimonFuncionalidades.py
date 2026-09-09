@@ -1,9 +1,10 @@
 from datetime import datetime
+from pathlib import Path
 from reportlab.pdfgen import canvas
 
-import Ejercicio63RaimonConstantes as const
+from . import Ejercicio63RaimonConstantes as const
 
-from Ejercicio63RaimonUtilidades import (
+from .Ejercicio63RaimonUtilidades import (
     limpiar_pantalla,
     mostrar_mensaje,
     pedir_confirmacion,
@@ -655,12 +656,13 @@ def crear_pdf(
 
 
     nombre_archivo = (
-        f"ticket_{id_ticket}.pdf"
+        Path(__file__).resolve().parent
+        / f"ticket_{id_ticket}.pdf"
     )
 
 
     documento = canvas.Canvas(
-        nombre_archivo,
+        str(nombre_archivo),
         pagesize=(
             ancho_ticket,
             alto_ticket

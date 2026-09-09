@@ -1,10 +1,20 @@
 import sys
 from datetime import datetime
+from pathlib import Path
 
-import Ejercicio63RaimonConstantes as const
-import Ejercicio63RaimonUtilidades as util
-import Ejercicio63RaimonFuncionalidades as func
-import ejercicio63RaimonCRUD as crud
+if __package__ in (None, ""):
+    carpeta_paquete = Path(__file__).resolve().parent
+    sys.path[:] = [
+        ruta for ruta in sys.path
+        if Path(ruta or ".").resolve() != carpeta_paquete
+    ]
+    sys.path.insert(0, str(carpeta_paquete.parent))
+    __package__ = "Ejercicio63Raimon"
+
+from . import Ejercicio63RaimonConstantes as const
+from . import Ejercicio63RaimonUtilidades as util
+from . import Ejercicio63RaimonFuncionalidades as func
+from . import Ejercicio63RaimonCRUD as crud
 
 
 # Las funciones del flujo se toman de sus módulos responsables.

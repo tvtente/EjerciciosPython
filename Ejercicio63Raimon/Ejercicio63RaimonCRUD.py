@@ -2,9 +2,9 @@ import sys
 import time
 from datetime import datetime
 from reportlab.pdfgen import canvas
-import Ejercicio63RaimonConstantes as const
-import Ejercicio63RaimonUtilidades as util
-import Ejercicio63RaimonFuncionalidades as func
+from . import Ejercicio63RaimonConstantes as const
+from . import Ejercicio63RaimonUtilidades as util
+from . import Ejercicio63RaimonFuncionalidades as func
 # Compatibilidad de 'select' según el sistema operativo (Windows vs. Linux/Mac)
 try:
     import select
