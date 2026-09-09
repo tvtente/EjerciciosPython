@@ -4,6 +4,7 @@ from datetime import datetime
 import Ejercicio63RaimonConstantes as const
 import Ejercicio63RaimonUtilidades as util
 import Ejercicio63RaimonFuncionalidades as func
+import ejercicio63RaimonCRUD as crud
 
 FRUTAS = {
     "cereza": ("🍒", "Cereza", 4.50),
@@ -366,10 +367,10 @@ def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
 
 # Las funciones del flujo se toman del módulo de func.
 mostrar_cesta = func.mostrar_cesta
-procesar_comando_global = func.procesar_comando_global
+procesar_comando_global = crud.procesar_comando_global
 buscar_fruta = func.buscar_fruta
 solicitar_kilos = func.solicitar_kilos
-actualizar_cesta = func.actualizar_cesta
+actualizar_cesta = crud.actualizar_cesta
 mostrar_ticket = func.mostrar_ticket
 procesar_pago = func.procesar_pago
 crear_pdf = func.crear_pdf
