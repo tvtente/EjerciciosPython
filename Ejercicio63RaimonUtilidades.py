@@ -1,4 +1,13 @@
-import subprocess, platform, time
+import subprocess
+import platform
+import time
+import select
+import sys
+
+try:
+    import msvcrt
+except ImportError:
+    msvcrt = None
 import Ejercicio63RaimonConstantes as const
 
 
@@ -12,45 +21,43 @@ COMANDO_LIMPIAR = ["cls"] if ES_WINDOWS else ["clear"]
 
 def generar_cabecera():
     """Genera dinámicamente el menú visual de frutas en 3 columnas."""
+    # El marco de la tabla define el ancho de toda la cabecera, incluidas las
+    # separaciones superior e inferior.
+    marco_superior = " ┌────────────────────┬──────────┬──┬────────────────────┬──────────┬──┬────────────────────┬──────────┐ "
+    separador = "=" * len(marco_superior)
+
     lineas = [
-        "==================================================================================================================",
+        separador,
         f"                                    🛒 {const.BOLD}FRUTERÍA - PUNTO DE VENTA{const.RESET}                     ",
-        "      Selecciona fruta, ajusta peso (+/-/*), cobra en efectivo o tarjeta y genera e imprime ticket      ",
-        "==================================================================================================================",
-        " ┌────────────────────┬──────────┬──┬────────────────────┬──────────┬──┬────────────────────┬──────────┐ ",
+        "      Selecciona fruta, ajusta peso (+/-/*), cobra en efectivo o tarjeta y genera e imprime tickets      ",
+        separador,
+        marco_superior,
         " │ FRUTA              │ PVP / Kg │  │ FRUTA              │ PVP / Kg │  │ FRUTA              │ PVP / Kg │ ",
         " ├────────────────────┼──────────┼──┼────────────────────┼──────────┼──┼────────────────────┼──────────┤ "
     ]
-    
+
     fila_actual = " "
-    # Recorremos todas las frutas una a una
     for contador, (icono, nombre, precio) in enumerate(const.FRUTAS.values(), start=1):
-        #Formateamos la cedal de la fruta actual
         precio_formateado = formato_precio(precio)
         celda = f"| {icono} {nombre:<15} | {precio_formateado:>8} |"
-        
-        #Añadimos a la fila actual
-        # Unimos las celdas usando 2 espacios de separación entre cada una
+
         if fila_actual == " ":
             fila_actual += celda
         else:
             fila_actual += "  " + celda
-        
-        #cada 3 frutas, guardamos la fila y la reiniciamos
+
         if contador % 3 == 0:
             lineas.append(fila_actual)
-            fila_actual= " "
-            
-    #Si al terminar el bucle queda alguna fruta suelta, la añadimos
+            fila_actual = " "
+
     if fila_actual.strip():
         lineas.append(fila_actual)
-            
-    #Añadimos la parte inferior de la cabecera y los comandos
+
     lineas.append(" └────────────────────┴──────────┴──┴────────────────────┴──────────┴──┴────────────────────┴──────────┘ ")
     lineas.append(f" 🎮 COMANDOS: {const.AMARILLO}[/]{const.RESET} Nuevo pedido     {const.CYAN}[%]{const.RESET} Generar Ticket   {const.ROJO}[Ctrl+C]{const.RESET} Salir")
     lineas.append(f" ⚖️  Kg (EJ.): {const.VERDE}[+3,5]{const.RESET} Sumar         {const.VERDE}[-2,7]{const.RESET} Restar        {const.VERDE}[*1,9]{const.RESET} Fijar      (Límite: {const.BOLD}hasta 10 Kg{const.RESET})")
-    lineas.append("==================================================================================================================")
-    
+    lineas.append(separador)
+
     return "\n".join(lineas) + "\n"
     
 
@@ -85,7 +92,7 @@ def mostrar_mensaje(texto, tipo="error", segundos=3, lineas_a_borrar=3):
 # │ SALIDA:      bool (True si 's'/'si', False en otro caso) │
 # └──────────────────────────────────────────────────────────┘
 def pedir_confirmacion(mensaje, tipo="pregunta"):
-    icono = const.BANDERAS.get(tipo, const.BANDERAS["pregunta"])
+    icono = const.ICONO_PREGUNTA
     respuesta = input(f"\n{icono}  {mensaje} (s/n): ").strip().lower()
     return respuesta in ["s", "si"]
 
@@ -98,3 +105,17 @@ def pedir_confirmacion(mensaje, tipo="pregunta"):
 # └──────────────────────────────────────────────────────────┘
 def formato_precio(numero):
     return f"{numero:.2f} €".replace(".", ",")
+
+
+# ┌──────────────────────────────────────────────────────────┐
+# │ FUNCIÓN:     limpiar_buffer()                            │
+# │ DESCRIPCIÓN: Vacía la entrada estándar de teclado        │
+# └──────────────────────────────────────────────────────────┘
+def limpiar_buffer():
+    if msvcrt is not None:
+        while msvcrt.kbhit():
+            msvcrt.getch()
+        return
+
+    while select.select([sys.stdin], [], [], 0)[0]:
+        sys.stdin.read(1)

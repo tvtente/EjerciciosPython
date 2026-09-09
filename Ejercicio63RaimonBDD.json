@@ -1,0 +1,77 @@
+{
+    "cereza": [
+        "🍒",
+        "Cereza",
+        4.5
+    ],
+    "datil": [
+        "🌴",
+        "Dátil",
+        6.2
+    ],
+    "fresa": [
+        "🍓",
+        "Fresa",
+        3.8
+    ],
+    "kiwi": [
+        "🥝",
+        "Kiwi",
+        3.2
+    ],
+    "limon": [
+        "🍋",
+        "Limón",
+        1.6
+    ],
+    "mango": [
+        "🥭",
+        "Mango",
+        3.5
+    ],
+    "manzana": [
+        "🍎",
+        "Manzana",
+        1.95
+    ],
+    "melocoton": [
+        "🍑",
+        "Melocotón",
+        2.4
+    ],
+    "melon": [
+        "🍈",
+        "Melón",
+        1.2
+    ],
+    "naranja": [
+        "🍊",
+        "Naranja",
+        1.5
+    ],
+    "pera": [
+        "🍐",
+        "Pera",
+        2.15
+    ],
+    "pina": [
+        "🍍",
+        "Piña",
+        1.8
+    ],
+    "platano": [
+        "🍌",
+        "Plátano",
+        2.1
+    ],
+    "sandia": [
+        "🍉",
+        "Sandía",
+        0.95
+    ],
+    "uva": [
+        "🍇",
+        "Uva",
+        2.9
+    ]
+}

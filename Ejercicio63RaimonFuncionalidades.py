@@ -97,7 +97,7 @@ def procesar_comando_global(fruta, cesta):
         if cesta:
 
             if pedir_confirmacion(
-                "¿Generar el ticket final y cobrar?"
+                f"{const.AMARILLO}¿Generar el ticket final y cobrar?{const.RESET}"
             ):
                 return "TICKET"
 
