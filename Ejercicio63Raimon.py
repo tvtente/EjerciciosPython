@@ -7,8 +7,6 @@ import Ejercicio63RaimonConstantes as const
 
 from Ejercicio63RaimonUtilidades import (
     limpiar_pantalla,
-    limpiar_buffer,
-    mostrar_mensaje,
     pedir_confirmacion,
     formato_precio
 )

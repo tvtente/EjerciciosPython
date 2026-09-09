@@ -68,3 +68,5 @@ def pedir_confirmacion(mensaje, tipo="pregunta"):
 # └──────────────────────────────────────────────────────────┘
 def formato_precio(numero):
     return f"{numero:.2f} €".replace(".", ",")
+
+
