@@ -1,4 +1,4 @@
-import re, sys, time, msvcrt, select
+import re, sys, time, select
 from reportlab.pdfgen import canvas
 from datetime import datetime
 import Ejercicio63RaimonConstantes as const
