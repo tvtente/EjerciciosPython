@@ -12,3 +12,7 @@
 /ejercicio6.3.2.png
 /ejercicio7.py
 /fruteria 2.py
+
+# Archivos locales generados por Python y VS Code.
+__pycache__/
+.vscode/
