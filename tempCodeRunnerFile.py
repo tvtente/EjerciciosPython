@@ -1,1 +1,1 @@
-global
+buscar_fruta
