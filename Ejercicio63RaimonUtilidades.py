@@ -2,11 +2,57 @@ import subprocess, platform, time
 import Ejercicio63RaimonConstantes as const
 
 
+# ==========================================
+# 2. DEFINICIÓN DE FUNCIONES AUXILIARES - UTILIDADES
+# ==========================================
+
 ES_WINDOWS      = platform.system() == "Windows"
 COMANDO_LIMPIAR = ["cls"] if ES_WINDOWS else ["clear"]
 
 
-
+def generar_cabecera():
+    """Genera dinámicamente el menú visual de frutas en 3 columnas."""
+    lineas = [
+        "==================================================================================================================",
+        f"                                    🛒 {const.BOLD}FRUTERÍA - PUNTO DE VENTA{const.RESET}                     ",
+        "      Selecciona fruta, ajusta peso (+/-/*), cobra en efectivo o tarjeta y genera e imprime ticket      ",
+        "==================================================================================================================",
+        " ┌────────────────────┬──────────┬──┬────────────────────┬──────────┬──┬────────────────────┬──────────┐ ",
+        " │ FRUTA              │ PVP / Kg │  │ FRUTA              │ PVP / Kg │  │ FRUTA              │ PVP / Kg │ ",
+        " ├────────────────────┼──────────┼──┼────────────────────┼──────────┼──┼────────────────────┼──────────┤ "
+    ]
+    
+    fila_actual = " "
+    # Recorremos todas las frutas una a una
+    for contador, (icono, nombre, precio) in enumerate(const.FRUTAS.values(), start=1):
+        #Formateamos la cedal de la fruta actual
+        precio_formateado = formato_precio(precio)
+        celda = f"| {icono} {nombre:<15} | {precio_formateado:>8} |"
+        
+        #Añadimos a la fila actual
+        # Unimos las celdas usando 2 espacios de separación entre cada una
+        if fila_actual == " ":
+            fila_actual += celda
+        else:
+            fila_actual += "  " + celda
+        
+        #cada 3 frutas, guardamos la fila y la reiniciamos
+        if contador % 3 == 0:
+            lineas.append(fila_actual)
+            fila_actual= " "
+            
+    #Si al terminar el bucle queda alguna fruta suelta, la añadimos
+    if fila_actual.strip():
+        lineas.append(fila_actual)
+            
+    #Añadimos la parte inferior de la cabecera y los comandos
+    lineas.append(" └────────────────────┴──────────┴──┴────────────────────┴──────────┴──┴────────────────────┴──────────┘ ")
+    lineas.append(f" 🎮 COMANDOS: {const.AMARILLO}[/]{const.RESET} Nuevo pedido     {const.CYAN}[%]{const.RESET} Generar Ticket   {const.ROJO}[Ctrl+C]{const.RESET} Salir")
+    lineas.append(f" ⚖️  Kg (EJ.): {const.VERDE}[+3,5]{const.RESET} Sumar         {const.VERDE}[-2,7]{const.RESET} Restar        {const.VERDE}[*1,9]{const.RESET} Fijar      (Límite: {const.BOLD}hasta 10 Kg{const.RESET})")
+    lineas.append("==================================================================================================================")
+    
+    return "\n".join(lineas) + "\n"
+    
 
 # ┌──────────────────────────────────────────────────────────┐
 # │ FUNCIÓN:     limpiar_pantalla()                          │
@@ -14,7 +60,7 @@ COMANDO_LIMPIAR = ["cls"] if ES_WINDOWS else ["clear"]
 # └──────────────────────────────────────────────────────────┘
 def limpiar_pantalla():
     subprocess.run(COMANDO_LIMPIAR, shell=ES_WINDOWS)
-    print(const.CABECERA)
+    print(generar_cabecera())
     
     
 # ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -52,5 +98,3 @@ def pedir_confirmacion(mensaje, tipo="pregunta"):
 # └──────────────────────────────────────────────────────────┘
 def formato_precio(numero):
     return f"{numero:.2f} €".replace(".", ",")
-
-

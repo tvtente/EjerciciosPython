@@ -1,3 +1,4 @@
+import sys
 import re, sys, time, select
 from reportlab.pdfgen import canvas
 from datetime import datetime
@@ -118,7 +119,7 @@ def buscar_fruta(fruta):
     clave_entrada = fruta.lower().replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u")
     coincidencias = []
     if clave_entrada != "":
-        for k in FRUTAS:
+        for k in const.FRUTAS:
             if k.startswith(clave_entrada):
                 coincidencias.append(k)
     return coincidencias
@@ -360,7 +361,7 @@ def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
 
     c.drawText(text_object)
     c.save()
-    print(f"{const.VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
+    print(f"{VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
     print(f"🖨️  Ticket enviado a la impresora...")
 
 
@@ -405,10 +406,10 @@ def ejecutar_tpv():
                 
                 if len(coincidencias) == 1:
                     clave = coincidencias[0]
-                    icono, nombre_bonito, precio = FRUTAS[clave]
+                    icono, nombre_bonito, precio = const.FRUTAS[clave]
                     print(f"{const.SUBIR}{const.BORRAR}¿Qué fruta quieres?: {nombre_bonito} {icono}")
                 elif len(coincidencias) > 1:
-                    nombres_sug = [FRUTAS[k][1] for k in coincidencias]
+                    nombres_sug = [const.FRUTAS[k][1] for k in coincidencias]
                     util.mostrar_mensaje(f"Especifica más... Coincidencias: {nombres_sug}", "warning")
                     continue
                 else:

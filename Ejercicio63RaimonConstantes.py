@@ -1,3 +1,9 @@
+
+# ==========================================
+# 1. CONSTANTES DEL SISTEMA
+# ==========================================
+
+
 BOLD            = "\033[1m"
 ROJO            = "\033[31;1m"
 VERDE           = "\033[32m"
@@ -20,21 +26,21 @@ BANDERAS = {
     "pregunta": "❓",
 }
 
-CABECERA        = (
-    "================================================================================================\n"
-    f"                                 🛒 {BOLD}FRUTERÍA - PUNTO DE VENTA{RESET}                     \n"
-    f"  Selecciona fruta, ajusta peso (+/-/*), cobra en efectivo o tarjeta y genera e imprime ticket      \n"
-    "================================================================================================\n"
-    " ┌─────────────────┬──────────┬──┬─────────────────┬──────────┬──┬─────────────────┬──────────┐ \n"
-    " │ FRUTA           │ PVP / Kg │  │ FRUTA           │ PVP / Kg │  │ FRUTA           │ PVP / Kg │ \n"
-    " ├─────────────────┼──────────┼──┼─────────────────┼──────────┼──┼─────────────────┼──────────┤ \n"
-    " │ 🍒 Cereza       │  4,50 €  │  │ 🥭 Mango        │  3,50 €  │  │ 🍐 Pera         │  2,15 €  │ \n"
-    " │ 🌴 Dátil        │  6,20 €  │  │ 🍎 Manzana      │  1,95 €  │  │ 🍍 Piña         │  1,80 €  │ \n"
-    " │ 🍓 Fresa        │  3,80 €  │  │ 🍑 Melocotón    │  2,40 €  │  │ 🍌 Plátano      │  2,10 €  │ \n"
-    " │ 🥝 Kiwi         │  3,20 €  │  │ 🍈 Melón        │  1,20 €  │  │ 🍉 Sandía       │  0,95 €  │ \n"
-    " │ 🍋 Limón        │  1,60 €  │  │ 🍊 Naranja      │  1,50 €  │  │ 🍇 Uva          │  2,90 €  │ \n"
-    " └─────────────────┴──────────┴──┴─────────────────┴──────────┴──┴─────────────────┴──────────┘ \n"
-    f" 🎮 COMANDOS: {AMARILLO}[/]{RESET} Nuevo pedido     {CYAN}[%]{RESET} Generar Ticket   {ROJO}[Ctrl+C]{RESET} Salir\n"
-    f" ⚖️  Kg (EJ.): {VERDE}[+3,5]{RESET} Sumar         {VERDE}[-2,7]{RESET} Restar        {VERDE}[*1,9]{RESET} Fijar      (Límite: {BOLD}hasta 10 Kg{RESET})\n"
-    "================================================================================================\n"
-)
+
+FRUTAS          = {
+    "cereza":    ("🍒", "Cereza",    4.50),
+    "datil":     ("🌴", "Dátil",     6.20),
+    "fresa":     ("🍓", "Fresa",     3.80),
+    "kiwi":      ("🥝", "Kiwi",      3.20),
+    "limon":     ("🍋", "Limón",     1.60),
+    "mango":     ("🥭", "Mango",     3.50),
+    "manzana":   ("🍎", "Manzana",   1.95),
+    "melocoton": ("🍑", "Melocotón", 2.40),
+    "melon":     ("🍈", "Melón",     1.20),
+    "naranja":   ("🍊", "Naranja",   1.50),
+    "pera":      ("🍐", "Pera",      2.15),
+    "pina":      ("🍍", "Piña",      1.80),
+    "platano":   ("🍌", "Plátano",   2.10),
+    "sandia":    ("🍉", "Sandía",    0.95),
+    "uva":       ("🍇", "Uva",       2.90)
+}
