@@ -10,3 +10,12 @@ SUBIR           = "\033[1A"
 BORRAR          = "\033[2K" 
 
 TIPO_IVA        = 0.04
+
+
+BANDERAS = {
+    "error": "❌",
+    "warning": "⚠️",
+    "info": "ℹ️",
+    "exito": "✅",
+    "pregunta": "❓",
+}

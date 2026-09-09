@@ -2,18 +2,12 @@ import re, sys, time, msvcrt, select
 from reportlab.pdfgen import canvas
 from datetime import datetime
 import Ejercicio63RaimonConstantes as const
+import Ejercicio63RaimonUtilidades as util
 
 # ==========================================
 # 1. CONFIGURACIÓN Y CONSTANTES DEL SISTEMA
 # ==========================================
 
-BANDERAS = {
-    "error": "❌",
-    "warning": "⚠️",
-    "info": "ℹ️",
-    "exito": "✅",
-    "pregunta": "❓",
-}
 
 FRUTAS          = {
     "cereza":    ("🍒", "Cereza",    4.50),
@@ -55,42 +49,6 @@ FRUTAS          = {
 #            sys.stdin.read(1)
 
 
-# ┌─────────────────────────────────────────────────────────────────────────────┐
-# │ FUNCIÓN:     mostrar_mensaje()                                              │
-# │ DESCRIPCIÓN: Notificación temporal con borrado dinámico                     │
-# │ ENTRADA:     texto (str), tipo (str), segundos (int), lineas_a_borrar (int) │
-# └─────────────────────────────────────────────────────────────────────────────┘
-def mostrar_mensaje(texto, tipo="error", segundos=3, lineas_a_borrar=3):
-    icono = BANDERAS.get(tipo, BANDERAS["warning"])
-    print(f"\n{icono}  {texto}")
-    time.sleep(segundos)
-    #limpiar_buffer()
-    
-    secuencia_borrado = f"{const.SUBIR}{const.BORRAR}" * lineas_a_borrar
-    print(secuencia_borrado, end="", flush=True)
-
-
-# ┌──────────────────────────────────────────────────────────┐
-# │ FUNCIÓN:     pedir_confirmacion()                        │
-# │ DESCRIPCIÓN: Captura confirmación del usuario (s/n)      │
-# │ ENTRADA:     mensaje (str), tipo (str)                   │
-# │ SALIDA:      bool (True si 's'/'si', False en otro caso) │
-# └──────────────────────────────────────────────────────────┘
-def pedir_confirmacion(mensaje, tipo="pregunta"):
-    icono = BANDERAS.get(tipo, BANDERAS["pregunta"])
-    respuesta = input(f"\n{icono}  {mensaje} (s/n): ").strip().lower()
-    return respuesta in ["s", "si"]
-
-
-# ┌──────────────────────────────────────────────────────────┐
-# │ FUNCIÓN:     formato_precio()                            │
-# │ DESCRIPCIÓN: Formatea importes a string en euros (€)     │
-# │ ENTRADA:     numero (float)                              │
-# │ SALIDA:      str (ej: '4,50 €')                          │
-# └──────────────────────────────────────────────────────────┘
-def formato_precio(numero):
-    return f"{numero:.2f} €".replace(".", ",")
-
 
 # ------------------------------------------
 # 2.2 FLUJO DE COMPRA Y CESTA
@@ -107,10 +65,10 @@ def mostrar_cesta(cesta):
         total_provisional = sum(item["total"] for item in cesta.values())
         for item in cesta.values():
             kg_txt  = f"{item['kg']:.2f}".replace(".00", "").replace(".", ",")
-            tot_txt = formato_precio(item['total'])
+            tot_txt = util.formato_precio(item['total'])
             print(f"   • {item['icono']} {item['nombre']:<10}: {kg_txt:>5} Kg  ->  {tot_txt:>9}")
         
-        tot_prov_txt = formato_precio(total_provisional)
+        tot_prov_txt = util.formato_precio(total_provisional)
         print("-" * 46)
         print(f"   {'TOTAL PROVISIONAL':<26} ->  {tot_prov_txt:>9}")
         print("-" * 46 + "\n")
@@ -125,24 +83,24 @@ def mostrar_cesta(cesta):
 def procesar_comando_global(fruta, cesta):
     if fruta == "/":
         if cesta:
-            if pedir_confirmacion("¿Seguro que quieres CANCELAR este pedido y empezar uno nuevo?"):
+            if util.pedir_confirmacion("¿Seguro que quieres CANCELAR este pedido y empezar uno nuevo?"):
                 cesta.clear()
-                mostrar_mensaje("Pedido cancelado. Iniciando nueva cesta...", "info", segundos=2)
+                util.mostrar_mensaje("Pedido cancelado. Iniciando nueva cesta...", "info", segundos=2)
                 return "CANCELAR"
             return "CONTINUAR"
-        mostrar_mensaje("La cesta ya está vacía", "warning")
+        util.mostrar_mensaje("La cesta ya está vacía", "warning")
         return "CONTINUAR"
 
     elif fruta == "%":
         if cesta:
-            if pedir_confirmacion("¿Generar el ticket final y cobrar?"):
+            if util.pedir_confirmacion("¿Generar el ticket final y cobrar?"):
                 return "TICKET"
             return "CONTINUAR"
-        mostrar_mensaje("La cesta está vacía. Añade al menos una fruta", "warning")
+        util.mostrar_mensaje("La cesta está vacía. Añade al menos una fruta", "warning")
         return "CONTINUAR"
 
     elif fruta == "":
-        mostrar_mensaje("Usa '%' para generar el ticket o '/' para cancelar el pedido", "info")
+        util.mostrar_mensaje("Usa '%' para generar el ticket o '/' para cancelar el pedido", "info")
         return "CONTINUAR"
 
     return "NINGUNA"
@@ -178,7 +136,7 @@ def solicitar_kilos(kg_acumulados, nombre_bonito):
             f"\nTienes {kg_acumulados:.2f} Kg de {nombre_bonito}. "
             f"Límite máximo (10,00 Kg) alcanzado. Usa '*' o '-' para reducir."
         ).replace(".", ",")
-        mostrar_mensaje(mensaje_aviso, "warning", segundos=3)
+        util.mostrar_mensaje(mensaje_aviso, "warning", segundos=3)
 
     while True:
         kg_input = input(f"¿Cuántos kilos? (máx. {kg_maximos_permitidos:.2f} kg): ".replace(".", ",")).strip().replace(",", ".")
@@ -205,7 +163,7 @@ def solicitar_kilos(kg_acumulados, nombre_bonito):
                     return -kg_acumulados  # Elimina el producto de la cesta
                 if 0.001 <= num_kilos <= 10.0:
                     return num_kilos - kg_acumulados
-                mostrar_mensaje("El peso fijado debe estar entre 0,001 y 10 Kg", "error")
+                util.mostrar_mensaje("El peso fijado debe estar entre 0,001 y 10 Kg", "error")
                 continue
 
             # 2. Modificador '-' (Restar peso)
@@ -216,7 +174,7 @@ def solicitar_kilos(kg_acumulados, nombre_bonito):
                 elif nuevo_total > 0:
                     return num_kilos
                 else:
-                    mostrar_mensaje(f"No puedes restar {abs(num_kilos):.2f} Kg. Solo hay {kg_acumulados:.2f} Kg en la cesta", "error")
+                    util.mostrar_mensaje(f"No puedes restar {abs(num_kilos):.2f} Kg. Solo hay {kg_acumulados:.2f} Kg en la cesta", "error")
                     continue
 
             # 3. Sumar peso (sin mínimo arbitrario de 0.10)
@@ -224,13 +182,13 @@ def solicitar_kilos(kg_acumulados, nombre_bonito):
                 return num_kilos
 
             if kg_maximos_permitidos < 0.001:
-                mostrar_mensaje("Límite de 10 Kg alcanzado. Solo puedes restar (ej: -2) o fijar (ej: *5)", "error")
+                util.mostrar_mensaje("Límite de 10 Kg alcanzado. Solo puedes restar (ej: -2) o fijar (ej: *5)", "error")
             else:
-                mostrar_mensaje(f"Introduce una cantidad válida (máx. {kg_maximos_permitidos:.2f} Kg)", "error")
+                util.mostrar_mensaje(f"Introduce una cantidad válida (máx. {kg_maximos_permitidos:.2f} Kg)", "error")
             continue
 
         except ValueError:
-            mostrar_mensaje("Entrada no válida. Escribe un número (ej: ,05), resta (ej: -,5) o fija (ej: *,5)", "error")
+            util.mostrar_mensaje("Entrada no válida. Escribe un número (ej: ,05), resta (ej: -,5) o fija (ej: *,5)", "error")
 
 
 # ┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -270,14 +228,14 @@ def mostrar_ticket(cesta, id_ticket):
     if not cesta: 
         return
 
-    limpiar_pantalla()
+    util.limpiar_pantalla()
     W_TEXTO, W_LINEA = 51, 53
     total = sum(item["total"] for item in cesta.values())
-    base = total / (1 + TIPO_IVA)
+    base = total / (1 + const.TIPO_IVA)
     iva = total - base
 
     print("=" * W_LINEA)
-    print(f" {BOLD}{'TICKET DE COMPRA':^{W_LINEA}}{RESET}")
+    print(f" {const.BOLD}{'TICKET DE COMPRA':^{W_LINEA}}{const.RESET}")
     print(" " + "=" * W_LINEA)
     print(f"  {f'Nº Ticket: {id_ticket}':>{W_TEXTO}}")
     print(" " + "-" * W_LINEA)
@@ -286,13 +244,13 @@ def mostrar_ticket(cesta, id_ticket):
 
     for item in cesta.values():
         peso = f"{item['kg']:.2f} Kg".replace(".", ",")
-        print(f"  {item['nombre']:<16} | {peso:>8} | {formato_precio(item['pvp']):>9} | {formato_precio(item['total']):>9}")
+        print(f"  {item['nombre']:<16} | {peso:>8} | {util.formato_precio(item['pvp']):>9} | {util.formato_precio(item['total']):>9}")
 
     print(" " + "-" * W_LINEA)
-    print(f"  {f'Base Imponible: {formato_precio(base)}':>{W_TEXTO}}")
-    print(f"  {f'IVA ({TIPO_IVA * 100:g}%): {formato_precio(iva)}':>{W_TEXTO}}")
+    print(f"  {f'Base Imponible: {util.formato_precio(base)}':>{W_TEXTO}}")
+    print(f"  {f'IVA ({const.TIPO_IVA * 100:g}%): {util.formato_precio(iva)}':>{W_TEXTO}}")
     print(" " + "=" * W_LINEA)
-    print(f"  {f'TOTAL A PAGAR: {formato_precio(total)}':>{W_TEXTO}}")
+    print(f"  {f'TOTAL A PAGAR: {util.formato_precio(total)}':>{W_TEXTO}}")
     print(" " + "=" * W_LINEA + "\n")
 
 
@@ -305,26 +263,26 @@ def mostrar_ticket(cesta, id_ticket):
 def procesar_pago(total_a_pagar):
     while True:
         entrega_input = input(
-            f"\n{BOLD}Total: {formato_precio(total_a_pagar)}{RESET} | "
-            f"{NARANJA}Entrega (€){RESET} {CYAN}[ENTER = Tarjeta]{RESET} > "
+            f"\n{const.BOLD}Total: {util.formato_precio(total_a_pagar)}{const.RESET} | "
+            f"{const.NARANJA}Entrega (€){const.RESET} {const.CYAN}[ENTER = Tarjeta]{const.RESET} > "
         ).strip()
         
         if entrega_input == "":
-            print(f"{CYAN}💳 PAGO CON TARJETA ACEPTADO{RESET}\n")
+            print(f"{const.CYAN}💳 PAGO CON TARJETA ACEPTADO{const.RESET}\n")
             return "Tarjeta", total_a_pagar, 0.0
 
         try:
             entrega = float(entrega_input.replace(",", "."))
             if entrega >= total_a_pagar:
                 cambio = entrega - total_a_pagar
-                print(f"{NARANJA}💶 CAMBIO A DEVOLVER: {formato_precio(cambio)}{RESET}\n")
+                print(f"{const.NARANJA}💶 CAMBIO A DEVOLVER: {util.formato_precio(cambio)}{const.RESET}\n")
                 return "Efectivo", entrega, cambio
             
             faltante = total_a_pagar - entrega
-            mostrar_mensaje(f"Cantidad insuficiente. Faltan {formato_precio(faltante)}", "error", segundos=2, lineas_a_borrar=4)
+            util.mostrar_mensaje(f"Cantidad insuficiente. Faltan {util.formato_precio(faltante)}", "error", segundos=2, lineas_a_borrar=4)
 
         except ValueError:
-            mostrar_mensaje("Introduce un número válido o pulsa ENTER para tarjeta", "error", segundos=2, lineas_a_borrar=4)
+            util.mostrar_mensaje("Introduce un número válido o pulsa ENTER para tarjeta", "error", segundos=2, lineas_a_borrar=4)
 
 
 # ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -335,7 +293,7 @@ def procesar_pago(total_a_pagar):
 def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
     print("⏳ Generando ticket en PDF...")
     total = sum(item["total"] for item in cesta.values())
-    base = total / (1 + TIPO_IVA)
+    base = total / (1 + const.TIPO_IVA)
     iva = total - base
     ANCHO_L = 36
 
@@ -359,23 +317,23 @@ def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
         nombre = item['nombre'][:12]
         peso = f"{item['kg']:.2f}".replace(".", ",")
         pvp = f"{item['pvp']:.2f}".replace(".", ",")
-        lineas.append(f"{nombre:<12} {peso:>8} {pvp:>5} {formato_precio(item['total']):>8}")
+        lineas.append(f"{nombre:<12} {peso:>8} {pvp:>5} {util.formato_precio(item['total']):>8}")
 
     # 3. Totales y forma de pago
     bloque_pago = [
         "-" * ANCHO_L,
-        f"{'Base Imponible:':<27} {formato_precio(base):>8}",
-        f"{f'IVA ({TIPO_IVA * 100:g}%):':<27} {formato_precio(iva):>8}",
+        f"{'Base Imponible:':<27} {util.formato_precio(base):>8}",
+        f"{f'IVA ({const.TIPO_IVA * 100:g}%):':<27} {util.formato_precio(iva):>8}",
         "=" * ANCHO_L,
-        f"{'TOTAL A PAGAR:':<27} {formato_precio(total):>8}",
+        f"{'TOTAL A PAGAR:':<27} {util.formato_precio(total):>8}",
         "=" * ANCHO_L,
         f"{'Forma de Pago:':<27} {metodo_pago:>8}"
     ]
 
     if metodo_pago == "Efectivo":
         bloque_pago.extend([
-            f"{'Entregado:':<27} {formato_precio(entrega):>8}",
-            f"{'Cambio:':<27} {formato_precio(cambio):>8}"
+            f"{'Entregado:':<27} {util.formato_precio(entrega):>8}",
+            f"{'Cambio:':<27} {util.formato_precio(cambio):>8}"
         ])
 
     bloque_pago.extend([
@@ -400,7 +358,7 @@ def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
 
     c.drawText(text_object)
     c.save()
-    print(f"{VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{RESET}")
+    print(f"{VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
     print(f"🖨️  Ticket enviado a la impresora...")
 
 
@@ -418,7 +376,7 @@ def ejecutar_tpv():
             cesta = {}
 
             while True:
-                limpiar_pantalla()
+                util.limpiar_pantalla()
                 mostrar_cesta(cesta)
 
                 fruta = input("¿Qué fruta quieres?: ").strip()
@@ -436,13 +394,13 @@ def ejecutar_tpv():
                 if len(coincidencias) == 1:
                     clave = coincidencias[0]
                     icono, nombre_bonito, precio = FRUTAS[clave]
-                    print(f"{SUBIR}{BORRAR}¿Qué fruta quieres?: {nombre_bonito} {icono}")
+                    print(f"{const.SUBIR}{const.BORRAR}¿Qué fruta quieres?: {nombre_bonito} {icono}")
                 elif len(coincidencias) > 1:
                     nombres_sug = [FRUTAS[k][1] for k in coincidencias]
-                    mostrar_mensaje(f"Especifica más... Coincidencias: {nombres_sug}", "warning")
+                    util.mostrar_mensaje(f"Especifica más... Coincidencias: {nombres_sug}", "warning")
                     continue
                 else:
-                    mostrar_mensaje(f"La fruta '{fruta}' no existe en el catálogo", "error")
+                    util.mostrar_mensaje(f"La fruta '{fruta}' no existe en el catálogo", "error")
                     continue
 
                 # 3. Solicitar Kilos y actualizar cesta
@@ -460,7 +418,7 @@ def ejecutar_tpv():
             metodo_pago, entrega, cambio = procesar_pago(total_a_pagar)
             crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago)
 
-            prompt = f"\n{AMARILLO}{BOLD}[/]{RESET} Nuevo pedido  |  {ROJO}{BOLD}[Ctrl + C]{RESET} Salir > "
+            prompt = f"\n{const.AMARILLO}{const.BOLD}[/]{const.RESET} Nuevo pedido  |  {const.ROJO}{const.BOLD}[Ctrl + C]{const.RESET} Salir > "
             if input(prompt) != "/": 
                 continue
 
