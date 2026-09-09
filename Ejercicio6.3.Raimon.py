@@ -362,12 +362,13 @@ def crear_pdf(cesta, id_ticket, entrega, cambio, metodo_pago):
 
     c.drawText(text_object)
     c.save()
-    print(f"{VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
+    print(f"{const.VERDE}📄 Ticket 'ticket_{id_ticket}.pdf' guardado correctamente{const.RESET}")
     print(f"🖨️  Ticket enviado a la impresora...")
 
 
 # Las funciones del flujo se toman del módulo de func.
-mostrar_cesta = func.mostrar_cesta
+mostrar_cesta = crud.mostrar_cesta
+agregar_producto = crud.agregar_producto
 procesar_comando_global = crud.procesar_comando_global
 buscar_fruta = func.buscar_fruta
 solicitar_kilos = func.solicitar_kilos
@@ -402,27 +403,11 @@ def ejecutar_tpv():
                 elif accion == "TICKET":
                     break
 
-                # 2. Búsqueda y selección de fruta
-                coincidencias = buscar_fruta(fruta)
-                
-                if len(coincidencias) == 1:
-                    clave = coincidencias[0]
-                    icono, nombre_bonito, precio = const.FRUTAS[clave]
-                    print(f"{const.SUBIR}{const.BORRAR}¿Qué fruta quieres?: {nombre_bonito} {icono}")
-                elif len(coincidencias) > 1:
-                    nombres_sug = [const.FRUTAS[k][1] for k in coincidencias]
-                    util.mostrar_mensaje(f"Especifica más... Coincidencias: {nombres_sug}", "warning")
+                # 2. Agregar producto
+                if not agregar_producto(cesta, fruta):
                     continue
-                else:
-                    util.mostrar_mensaje(f"La fruta '{fruta}' no existe en el catálogo", "error")
-                    continue
-
-                # 3. Solicitar Kilos y actualizar cesta
-                existente = cesta.get(clave)
-                kg_acumulados = existente["kg"] if existente else 0.0
+            
                 
-                kg = solicitar_kilos(kg_acumulados, nombre_bonito)
-                actualizar_cesta(cesta, clave, nombre_bonito, icono, precio, kg)
 
             # 4. Cobro y generación de PDF
             id_ticket = datetime.now().strftime("%Y%m%d_%H%M%S")
