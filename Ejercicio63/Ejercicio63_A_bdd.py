@@ -26,24 +26,46 @@ FRUTAS_INICIALES = {
     "🥥 Coco": {"codigo": "17", "tipo": "unidad", "precio_kg": 3.14, "pesos": [0.860, 0.615, 0.704]},
 }
 
+CABECERA_INICIAL = {
+    "titulo": "Catálogo de frutas",
+    "version": 1,
+    "descripcion": "Productos disponibles para la frutería.",
+}
+CABECERA_BDD = CABECERA_INICIAL.copy()
+
 
 def guardar_frutas(frutas):
     """Guarda el catálogo en un JSON legible, conservando emojis y acentos."""
+    documento = {
+        "cabecera": CABECERA_BDD,
+        "frutas": frutas,
+    }
     with RUTA_BDD.open("w", encoding="utf-8") as archivo:
-        json.dump(frutas, archivo, ensure_ascii=False, indent=4)
+        json.dump(documento, archivo, ensure_ascii=False, indent=4)
         archivo.write("\n")
 
 
 def cargar_frutas():
     """Carga el catálogo JSON o lo crea a partir de los datos iniciales."""
+    global CABECERA_BDD
     if not RUTA_BDD.exists():
         guardar_frutas(FRUTAS_INICIALES)
 
     with RUTA_BDD.open(encoding="utf-8") as archivo:
-        frutas = json.load(archivo)
+        documento = json.load(archivo)
 
+    if "frutas" not in documento:
+        if not isinstance(documento, dict):
+            raise ValueError("El catálogo JSON debe contener un objeto de frutas.")
+        frutas = documento
+        guardar_frutas(frutas)
+        return frutas
+
+    frutas = documento["frutas"]
     if not isinstance(frutas, dict):
-        raise ValueError("El catálogo JSON debe contener un objeto de frutas.")
+        raise ValueError("La clave 'frutas' del JSON debe contener un objeto.")
+    if isinstance(documento.get("cabecera"), dict):
+        CABECERA_BDD = documento["cabecera"]
     return frutas
 
 

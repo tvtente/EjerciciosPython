@@ -1,129 +1,136 @@
 {
-    "🍌 Plátano": {
-        "codigo": "01",
-        "tipo": "peso",
-        "precio_kg": 1.35,
-        "stock": 10.0
+    "cabecera": {
+        "titulo": "Catálogo de frutas",
+        "version": 1,
+        "descripcion": "Productos disponibles para la frutería."
     },
-    "🍎 Manzana": {
-        "codigo": "02",
-        "tipo": "peso",
-        "precio_kg": 0.8,
-        "stock": 8.0
-    },
-    "🍐 Pera": {
-        "codigo": "03",
-        "tipo": "peso",
-        "precio_kg": 0.85,
-        "stock": 6.0
-    },
-    "🍊 Naranja": {
-        "codigo": "04",
-        "tipo": "peso",
-        "precio_kg": 0.7,
-        "stock": 12.0
-    },
-    "🍓 Fresa": {
-        "codigo": "05",
-        "tipo": "peso",
-        "precio_kg": 1.7,
-        "stock": 5.0
-    },
-    "🍒 Cereza": {
-        "codigo": "06",
-        "tipo": "peso",
-        "precio_kg": 2.2,
-        "stock": 5.0
-    },
-    "🍑 Durazno": {
-        "codigo": "07",
-        "tipo": "peso",
-        "precio_kg": 1.95,
-        "stock": 8.0
-    },
-    "🍈 Melón": {
-        "codigo": "08",
-        "tipo": "unidad",
-        "precio_kg": 2.54,
-        "pesos": [
-            0.85,
-            1.25
-        ]
-    },
-    "🍍 Piña": {
-        "codigo": "09",
-        "tipo": "unidad",
-        "precio_kg": 1.54,
-        "pesos": [
-            0.8,
-            0.75,
-            1.3
-        ]
-    },
-    "🍉 Sandía": {
-        "codigo": "10",
-        "tipo": "unidad",
-        "precio_kg": 1.44,
-        "pesos": [
-            1.8,
-            1.55,
-            1.4
-        ]
-    },
-    "🌴 Papaya": {
-        "codigo": "11",
-        "tipo": "unidad",
-        "precio_kg": 1.64,
-        "pesos": [
-            0.8,
-            0.65,
-            1.04
-        ]
-    },
-    "🌰 Durian": {
-        "codigo": "12",
-        "tipo": "unidad",
-        "precio_kg": 5.0,
-        "pesos": [
-            1.8,
-            2.0,
-            2.2,
-            1.95,
-            2.1
-        ]
-    },
-    "🍇 Uva": {
-        "codigo": "13",
-        "tipo": "peso",
-        "precio_kg": 1.8,
-        "stock": 2.0
-    },
-    "🥝 Kiwi": {
-        "codigo": "14",
-        "tipo": "peso",
-        "precio_kg": 2.2,
-        "stock": 6.0
-    },
-    "🥭 Mango": {
-        "codigo": "15",
-        "tipo": "peso",
-        "precio_kg": 2.0,
-        "stock": 7.0
-    },
-    "🍋 Limón": {
-        "codigo": "16",
-        "tipo": "peso",
-        "precio_kg": 1.4,
-        "stock": 10.0
-    },
-    "🥥 Coco": {
-        "codigo": "17",
-        "tipo": "unidad",
-        "precio_kg": 3.14,
-        "pesos": [
-            0.86,
-            0.615,
-            0.704
-        ]
+    "frutas": {
+        "🍌 Plátano": {
+            "codigo": "01",
+            "tipo": "peso",
+            "precio_kg": 1.35,
+            "stock": 10.0
+        },
+        "🍎 Manzana": {
+            "codigo": "02",
+            "tipo": "peso",
+            "precio_kg": 0.8,
+            "stock": 8.0
+        },
+        "🍐 Pera": {
+            "codigo": "03",
+            "tipo": "peso",
+            "precio_kg": 0.85,
+            "stock": 6.0
+        },
+        "🍊 Naranja": {
+            "codigo": "04",
+            "tipo": "peso",
+            "precio_kg": 0.7,
+            "stock": 12.0
+        },
+        "🍓 Fresa": {
+            "codigo": "05",
+            "tipo": "peso",
+            "precio_kg": 1.7,
+            "stock": 5.0
+        },
+        "🍒 Cereza": {
+            "codigo": "06",
+            "tipo": "peso",
+            "precio_kg": 2.2,
+            "stock": 5.0
+        },
+        "🍑 Durazno": {
+            "codigo": "07",
+            "tipo": "peso",
+            "precio_kg": 1.95,
+            "stock": 8.0
+        },
+        "🍈 Melón": {
+            "codigo": "08",
+            "tipo": "unidad",
+            "precio_kg": 2.54,
+            "pesos": [
+                0.85,
+                1.25
+            ]
+        },
+        "🍍 Piña": {
+            "codigo": "09",
+            "tipo": "unidad",
+            "precio_kg": 1.54,
+            "pesos": [
+                0.8,
+                0.75,
+                1.3
+            ]
+        },
+        "🍉 Sandía": {
+            "codigo": "10",
+            "tipo": "unidad",
+            "precio_kg": 1.44,
+            "pesos": [
+                1.8,
+                1.55,
+                1.4
+            ]
+        },
+        "🌴 Papaya": {
+            "codigo": "11",
+            "tipo": "unidad",
+            "precio_kg": 1.64,
+            "pesos": [
+                0.8,
+                0.65,
+                1.04
+            ]
+        },
+        "🌰 Durian": {
+            "codigo": "12",
+            "tipo": "unidad",
+            "precio_kg": 5.0,
+            "pesos": [
+                1.8,
+                2.0,
+                2.2,
+                1.95,
+                2.1
+            ]
+        },
+        "🍇 Uva": {
+            "codigo": "13",
+            "tipo": "peso",
+            "precio_kg": 1.8,
+            "stock": 2.0
+        },
+        "🥝 Kiwi": {
+            "codigo": "14",
+            "tipo": "peso",
+            "precio_kg": 2.2,
+            "stock": 6.0
+        },
+        "🥭 Mango": {
+            "codigo": "15",
+            "tipo": "peso",
+            "precio_kg": 2.0,
+            "stock": 7.0
+        },
+        "🍋 Limón": {
+            "codigo": "16",
+            "tipo": "peso",
+            "precio_kg": 1.4,
+            "stock": 10.0
+        },
+        "🥥 Coco": {
+            "codigo": "17",
+            "tipo": "unidad",
+            "precio_kg": 3.14,
+            "pesos": [
+                0.86,
+                0.615,
+                0.704
+            ]
+        }
     }
 }
