@@ -4,6 +4,7 @@ from BorroPantalla import Borro  # Desde la aplicación BorroPantalla importo la
 
 FILE_NAME = "asistencia.json"
 Borro()
+# X
 # 1. Función 
 def cargar_datos():
     try:
