@@ -2,9 +2,27 @@
     {
         "id": 1,
         "empleado": "EMP002",
-        "Nombre": "Juan Perez",
+        "nombre": "italo",
         "fecha": "2026-09-14",
-        "entrada": "10:24",
+        "entrada": "10:46",
+        "salida": "Pendiente",
+        "horas_trabajadas": 0.0
+    },
+    {
+        "id": 2,
+        "empleado": "EMP001",
+        "nombre": "Gustavo",
+        "fecha": "2026-09-14",
+        "entrada": "08:00",
+        "salida": "09:00",
+        "horas_trabajadas": 1.0
+    },
+    {
+        "id": 3,
+        "empleado": "EMP003",
+        "nombre": "cristina",
+        "fecha": "2026-09-14",
+        "entrada": "09:00",
         "salida": "Pendiente",
         "horas_trabajadas": 0.0
     }

@@ -6,6 +6,7 @@ FILE_NAME = "asistencia.json"
 
 
 def cargar_datos():
+    """Carga los registros desde el archivo JSON anterior."""
     try:
         with open(FILE_NAME, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -14,6 +15,7 @@ def cargar_datos():
 
 
 def leer_registros():
+    """Muestra los registros con el formato antiguo del archivo."""
     datos = cargar_datos()
 
     if not datos:

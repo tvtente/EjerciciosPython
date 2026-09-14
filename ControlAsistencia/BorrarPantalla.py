@@ -1,5 +1,9 @@
 import os
+import platform
+import subprocess
 
 
 def Borro():
-    os.system("cls")
+    """Limpia la consola según el sistema operativo."""
+    comando = ["cls"] if platform.system() == "Windows" else ["clear"]
+    subprocess.run(comando, shell=platform.system() == "Windows")
