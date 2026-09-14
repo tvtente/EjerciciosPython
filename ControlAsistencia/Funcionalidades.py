@@ -116,17 +116,23 @@ def actualizar_registro():
 
 def eliminar_registro():
     """Elimina el registro que coincida con el ID introducido."""
-    datos = cargar_datos()
+    datos = cargar_datos()     # Cargamos los datos
     try:
-        reg_id = int(input("Ingrese el ID del registro a eliminar: "))
+        reg_id = int(input("Ingrese el ID del registro a eliminar: "))   # Pedimos el ID del registro
     except ValueError:
-        print("ID inválido.")
+        print("ID inválido.")   # Si no es un número, mostramos un error
         return
 
-    nuevos_datos = [registro for registro in datos if registro["id"] != reg_id]
-    if len(nuevos_datos) == len(datos):
+    nuevos_datos = [registro for registro in datos if registro["id"] != reg_id]   # Creamos una lista sin el registro elegido
+    if len(nuevos_datos) == len(datos):   # Comprobamos si el registro existe
         print("Registro no encontrado.")
         return
-
-    guardar_datos(nuevos_datos)
-    print("Registro eliminado correctamente.")
+    
+    confirmar = input("¿Está seguro de eliminar este registro? (s/n): ").lower()  # Pedimos confirmación antes de eliminar
+    
+    if confirmar == "s":
+        guardar_datos(nuevos_datos)  # Guardamos los datos sin el registro
+        print("Registro eliminado correctamente.")
+        
+    else:
+        print("Eliminación cancelada.")   # Cancelamos la eliminación
