@@ -2,6 +2,7 @@
     {
         "id": 1,
         "empleado": "EMP002",
+        "Nombre": "Juan Perez",
         "fecha": "2026-09-14",
         "entrada": "10:24",
         "salida": "Pendiente",

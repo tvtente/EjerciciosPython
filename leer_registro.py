@@ -2,7 +2,6 @@ import json
 import time
 from BorroPantalla import Borro
 
-
 FILE_NAME = "asistencia.json"
 
 
@@ -13,39 +12,37 @@ def cargar_datos():
     except (FileNotFoundError, json.JSONDecodeError):
         return []
 
-    def leer_registro():
-        datos = cargar_datos()
 
-        # Comprobamos si existen registros
-        if not datos:
-            print("\n" + "=" * 60)
-            print("                REGISTROS DE ASISTENCIA")
-            print("=" * 60)
-            print("\n No hay registros en el sistema.")
+def leer_registros():
+    datos = cargar_datos()
 
-            time.sleep(3)
-            Borro()
-            return
-
-        # Encabezado
+    if not datos:
         print("\n" + "=" * 60)
-        print("                REGISTROS DE ASISTENCIA")
+        print("           REGISTROS DE ASISTENCIA")
         print("=" * 60)
+        print("\nNo hay registros en el sistema.")
 
-        # Mostrar todos los registros
-        for r in datos:
-            print(f"""
-            ID del registro: {r['id']}
-            Empleado: {r['empleado']}
-            Fecha: {r['fecha']}
-            Entrada: {r['entrada']}
-            Salida: {r['salida']}
-            Horas trabajadas: {r['horas_trabajadas']}
-            {"-" * 60}""")
-            
-            # Total de registros
-            print(f"total de registros: {len(datos)}")
+        time.sleep(3)
+        Borro()
+        return
 
-            # Esperar antes de volver al menu
-            input("\nPresione Enter para volver al menú...")
-            Borro()
+    print("\n" + "=" * 60)
+    print("           REGISTROS DE ASISTENCIA")
+    print("=" * 60)
+
+    for r in datos:
+        print(f"""
+ID del registro : {r['id']}
+Empleado        : {r['empleado']}
+Nombre          : {r['nombre']}
+Fecha           : {r['fecha']}
+Entrada         : {r['entrada']}
+Salida          : {r['salida']}
+Horas trabajadas: {r['horas_trabajadas']}
+{"-" * 60}""")
+
+    print(f"Total de registros: {len(datos)}")
+
+    input("\nPresione ENTER para volver al menú...")
+
+    Borro()
