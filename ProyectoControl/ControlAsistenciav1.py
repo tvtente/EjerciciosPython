@@ -138,7 +138,7 @@ def leer_registros():
 def actualizar_registro():
     while True:
         imprimir_encabezado()
-        datos = cargar_datos()
+        datos = Datospersonal.Datos_personal()
         
         # Opción para salir si el usuario presiona Enter sin ingresar datos
         print(" [ Presione Enter sin escribir nada para volver al menú ]\n")
