@@ -1,6 +1,7 @@
 import json,re,time
 from datetime import datetime
 from BorroPantalla import Borro  # Desde la aplicación BorroPantalla importo la funcion.
+from leer_registros import leer_registros
 
 FILE_NAME = "asistencia.json"
 Borro()
