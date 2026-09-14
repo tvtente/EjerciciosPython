@@ -2,9 +2,9 @@
     {
         "id": 1,
         "empleado": "EMP002",
-        "nombre": "italo",
+        "Nombre": "Juan Perez",
         "fecha": "2026-09-14",
-        "entrada": "10:46",
+        "entrada": "10:24",
         "salida": "Pendiente",
         "horas_trabajadas": 0.0
     }

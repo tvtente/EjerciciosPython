@@ -1,6 +1,6 @@
 import json
 import time
-from BorroPantalla import Borro
+from BorrarPantalla import Borro
 
 FILE_NAME = "asistencia.json"
 
