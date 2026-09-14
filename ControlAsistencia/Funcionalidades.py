@@ -3,7 +3,7 @@ from datetime import datetime
 
 from BDD import cargar_datos, guardar_datos
 from BorrarPantalla import Borro
-from Validaciones import validar_formato_hora, validar_id_empleado
+from Validaciones import validar_formato_hora
 
 
 def calcular_horas(entrada, salida):
@@ -17,47 +17,89 @@ def calcular_horas(entrada, salida):
 def crear_registro():
     """Solicita los datos de un empleado y crea su registro de asistencia."""
     datos = cargar_datos()
-    emp_id = input("ID del empleado (ej. EMP001): ").upper()
-    if not validar_id_empleado(emp_id):
-        print("❌ Formato de ID inválido. Debe ser 3 letras y 3 números (ej. EMP001).❌")
-        time.sleep(5)
-        Borro()
-        return
 
-    nombre = input("Nombre del empleado: ").strip()
-    if not nombre:
-        print("❌ El nombre no puede estar vacío.")
+    # SOLO 6 empleados válidos
+    empleados_validos = {
+        "001": "Oksana Marcos",
+        "002": "Italo Sherman",
+        "003": "Gustavo Vladimir",
+        "004": "Lindey García",
+        "005": "Sanjana Kumari",
+        "006": "Cristina Espacio"
+    }
+
+    # El usuario solo escribe el número
+    numero = input("Número del empleado (001–006): ").strip()
+
+    # Validación del número
+    if numero not in empleados_validos:
+        print("❌ Este número no existe. Solo hay 6 empleados registrados.")
         time.sleep(3)
         Borro()
         return
 
-    fecha = datetime.now().strftime("%Y-%m-%d")
-    entrada = input("Hora de entrada (HH:MM): ")
-    if not validar_formato_hora(entrada):
-        print("Formato de hora inválido. Use HH:MM.")
-        return
+    # Generación automática del ID
+    emp_id = f"EMP{numero}"
 
-    salida = input("Hora de salida (HH:MM, presione Enter si queda pendiente): ")
+    # Nombre automático (NO se puede modificar)
+    nombre = empleados_validos[numero]
+
+    fecha = datetime.now().strftime("%d-%m-%y")
+
+    #VALIDACIÓN DE HORA DE ENTRADA (CON AUTO-FORMATO Y BORRO)
+    while True:
+        entrada = input("Hora de entrada (HH:MM): ").strip()
+
+        # Si escribe 4 números seguidos → convertir a HH:MM
+        if entrada.isdigit() and len(entrada) == 4:
+            entrada = entrada[:2] + ":" + entrada[2:]
+
+        if validar_formato_hora(entrada):
+            break
+
+        print("❌ Formato de hora inválido. Use HH:MM.")
+        time.sleep(3)
+        Borro()
+
+    #VALIDACIÓN DE HORA DE SALIDA (CON AUTO-FORMATO Y BORRO)
     horas_trabajadas = 0.0
-    if salida:
-        if not validar_formato_hora(salida):
-            print("Formato de hora de salida inválido.")
-            return
-        horas_trabajadas = calcular_horas(entrada, salida)
+    while True:
+        salida = input("Hora de salida (HH:MM, Enter si queda pendiente): ").strip()
+
+        # Si queda pendiente
+        if salida == "":
+            salida = "Pendiente"
+            horas_trabajadas = 0.0
+            break
+
+        # Si escribe 4 números seguidos → convertir a HH:MM
+        if salida.isdigit() and len(salida) == 4:
+            salida = salida[:2] + ":" + salida[2:]
+
+        if validar_formato_hora(salida):
+            horas_trabajadas = calcular_horas(entrada, salida)
+            break
+
+        print("❌ Formato de hora inválido. Use HH:MM.")
+        time.sleep(3)
+        Borro()
 
     nuevo_id = 1 if not datos else datos[-1]["id"] + 1
+
     registro = {
         "id": nuevo_id,
         "empleado": emp_id,
-        "nombre": nombre,
+        "nombre": nombre,  # AUTOMÁTICO
         "fecha": fecha,
         "entrada": entrada,
-        "salida": salida if salida else "Pendiente",
+        "salida": salida,
         "horas_trabajadas": horas_trabajadas,
     }
+
     datos.append(registro)
     guardar_datos(datos)
-    print("Registro guardado exitosamente.")
+    print(f"✔ Registro guardado exitosamente para {emp_id} ({nombre}).")
+
 
 
 def leer_registros():
