@@ -36,15 +36,6 @@
         "horas_trabajadas": 0.0
     },
     {
-        "id": 5,
-        "empleado": "EMP001",
-        "nombre": "Oksana Marcos",
-        "fecha": "2026-09-14",
-        "entrada": "15:15",
-        "salida": "Pendiente",
-        "horas_trabajadas": 0.0
-    },
-    {
         "id": 6,
         "empleado": "EMP001",
         "nombre": "Oksana Marcos",
@@ -52,5 +43,14 @@
         "entrada": "12:56",
         "salida": "15:37",
         "horas_trabajadas": 2.68
+    },
+    {
+        "id": 7,
+        "empleado": "EMP006",
+        "nombre": "Cristina Espacio",
+        "fecha": "14-09-26",
+        "entrada": "14:00",
+        "salida": "Pendiente",
+        "horas_trabajadas": 0.0
     }
 ]

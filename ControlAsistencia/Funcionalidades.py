@@ -5,6 +5,10 @@ from BDD import cargar_datos, guardar_datos
 from BorrarPantalla import Borro
 from Validaciones import validar_formato_hora
 
+CIAN = "\033[36m"
+NEGRITA = "\033[1m"
+RESET = "\033[0m"
+
 
 def calcular_horas(entrada, salida):
     """Calcula las horas trabajadas entre una entrada y una salida."""
@@ -111,13 +115,53 @@ def leer_registros():
         Borro()
         return
 
-    for registro in datos:
-        print(
-            f"ID: {registro['id']} | Empleado: {registro['empleado']} | "
-            f"Nombre: {registro.get('nombre', 'Sin nombre')} | "
-            f"Fecha: {registro['fecha']} | Entrada: {registro['entrada']} | "
-            f"Salida: {registro['salida']} | Horas: {registro['horas_trabajadas']}"
+    encabezados = ("ID", "Empleado", "Nombre", "Fecha", "Entrada", "Salida", "Horas")
+    filas = [
+        (
+            str(registro["id"]),
+            registro["empleado"],
+            registro.get("nombre", "Sin nombre"),
+            registro["fecha"],
+            registro["entrada"],
+            registro["salida"],
+            f"{registro['horas_trabajadas']:.2f}",
         )
+        for registro in datos
+    ]
+    anchos = [
+        max(len(encabezado), *(len(fila[indice]) for fila in filas))
+        for indice, encabezado in enumerate(encabezados)
+    ]
+
+    separador = "┼".join("─" * (ancho + 2) for ancho in anchos)
+    borde_superior = "┌" + separador.replace("┼", "┬") + "┐"
+    borde_medio = "├" + separador + "┤"
+    borde_inferior = "└" + separador.replace("┼", "┴") + "┘"
+
+    print(f"\n{CIAN}{borde_superior}{RESET}")
+    print(
+        f"{CIAN}│{RESET}{NEGRITA}"
+        f"{'📋 REGISTROS DE ASISTENCIA':^{sum(anchos) + 3 * (len(anchos) - 1) + 1}}"
+        f"{RESET}{CIAN}│{RESET}"
+    )
+    print(f"{CIAN}{borde_medio}{RESET}")
+    print(
+        f"{CIAN}│{RESET} "
+        + f" {CIAN}│{RESET} ".join(
+            f"{encabezado:^{ancho}}" for encabezado, ancho in zip(encabezados, anchos)
+        )
+        + f" {CIAN}│{RESET}"
+    )
+    print(f"{CIAN}{borde_medio}{RESET}")
+    for fila in filas:
+        print(
+            f"{CIAN}│{RESET} "
+            + f" {CIAN}│{RESET} ".join(
+                f"{valor:<{ancho}}" for valor, ancho in zip(fila, anchos)
+            )
+            + f" {CIAN}│{RESET}"
+        )
+    print(f"{CIAN}{borde_inferior}{RESET}")
 
 
 def actualizar_registro():
