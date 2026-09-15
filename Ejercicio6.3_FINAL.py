@@ -672,6 +672,4 @@ if __name__=="__main__":
         print("\n\n")
         print(f"{INFO} Se ha pulsado Ctrl + C.{RESET}")
         print("👋 Saliendo de Frutería Python...")
-        
-    finally:
         print(f"{EXITO} Programa terminado{RESET}")

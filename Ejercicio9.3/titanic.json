@@ -1,0 +1,34 @@
+[
+    {
+        "PassengerId":1,
+        "Survived":0,
+        "Pclass":3,
+        "Name":"Braund, Mr. Owen Harris",
+        "Sex":"male",
+        "Age":22
+    },
+    {
+        "PassengerId":2,
+        "Survived":1,
+        "Pclass":1,
+        "Name":"Florence Briggs Thayer",
+        "Sex":"female",
+        "Age":38
+    },
+    {
+        "PassengerId":3,
+        "Survived":1,
+        "Pclass":3,
+        "Name":"Heikkinen, Miss. Laina",
+        "Sex":"female",
+        "Age":26
+    },
+    {
+        "PassengerId":4,
+        "Survived":1,
+        "Pclass":1,
+        "Name":"Lily May Peel",
+        "Sex":"female",
+        "Age":35
+    }
+]
