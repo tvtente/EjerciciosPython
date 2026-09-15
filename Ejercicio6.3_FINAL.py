@@ -3,6 +3,7 @@ import re
 import unicodedata
 import subprocess
 import platform
+import json
 from datetime import datetime
 
 # ============================================================
@@ -36,25 +37,8 @@ PATRON_DECIMAL=r"^\d{1,6}(?:[,.]\d{1,3})?$"
 # ============================================================
 # CATÁLOGO
 # ============================================================
-FRUTAS_DISPONIBLES={
-    "🍌 Plátano":{"codigo":"01","tipo":"peso","precio_kg":1.35,"stock":10.0},
-    "🍎 Manzana":{"codigo":"02","tipo":"peso","precio_kg":0.80,"stock":8.0},
-    "🍐 Pera":{"codigo":"03","tipo":"peso","precio_kg":0.85,"stock":6.0},
-    "🍊 Naranja":{"codigo":"04","tipo":"peso","precio_kg":0.70,"stock":12.0},
-    "🍓 Fresa":{"codigo":"05","tipo":"peso","precio_kg":1.70,"stock":5.0},
-    "🍒 Cereza":{"codigo":"06","tipo":"peso","precio_kg":2.20,"stock":5.0},
-    "🍑 Durazno":{"codigo":"07","tipo":"peso","precio_kg":1.95,"stock":8.0},
-    "🍈 Melón":{"codigo":"08","tipo":"unidad","precio_kg":2.54,"pesos":[0.850,1.250]},
-    "🍍 Piña":{"codigo":"09","tipo":"unidad","precio_kg":1.54,"pesos":[0.800,0.750,1.300]},
-    "🍉 Sandía":{"codigo":"10","tipo":"unidad","precio_kg":1.44,"pesos":[1.800,1.550,1.400]},
-    "🌴 Papaya":{"codigo":"11","tipo":"unidad","precio_kg":1.64,"pesos":[0.800, 0.650, 1.040]},
-    "🌰 Durian":{"codigo":"12","tipo":"unidad","precio_kg":5.00,"pesos":[1.800,2.000,2.200,1.950,2.100]},
-    "🍇 Uva":{"codigo":"13","tipo":"peso","precio_kg":1.80,"stock":2.0},
-    "🥝 Kiwi":{"codigo":"14","tipo":"peso","precio_kg":2.20,"stock":6.0},
-    "🥭 Mango":{"codigo":"15","tipo":"peso","precio_kg":2.00,"stock":7.0},
-    "🍋 Limón":{"codigo":"16","tipo":"peso","precio_kg":1.40,"stock":10.0},
-    "🥥 Coco":{"codigo":"17","tipo":"unidad","precio_kg":3.14,"pesos":[0.860,0.615,0.704]}
-}
+with open('frutas.json', 'r', encoding='utf-8') as archivo:
+    FRUTAS_DISPONIBLES=json.load(archivo)
 
 # PREGUNTA DE NEGOCIO: ¿el catálogo y el stock deben guardarse en un archivo
 # para que no vuelvan a sus valores iniciales al cerrar el programa?
@@ -77,6 +61,12 @@ def calcular_total_final():
     subtotal=sum(datos["subtotal"] for datos in carrito.values())
     envio=COSTE_ENVIO_DOMICILIO if tipo_compra=="1" and tipo_entrega=="2" else 0.0
     return round(subtotal+envio,2)
+
+def fruta_disponible(nombre):
+    datos=FRUTAS_DISPONIBLES[nombre]
+    if datos["tipo"]=="peso":
+        return datos["stock"]>0
+    return bool(datos["pesos"])
 
 def mostrar_menu_pedido():
     ancho=58
@@ -525,7 +515,9 @@ def main():
                 # solo controla productos; envío y bolsas se revisan al finalizar.
                 nombre=buscar_fruta()
                 if nombre is not None:
-                    if FRUTAS_DISPONIBLES[nombre]["tipo"]=="peso":
+                    if not fruta_disponible(nombre):
+                        input(f"❌ {nombre} no está disponible. Pulsa Enter para continuar.")
+                    elif FRUTAS_DISPONIBLES[nombre]["tipo"]=="peso":
                         nuevo=seleccionar_por_peso(nombre)
                     else:
                         nuevo=seleccionar_por_unidad(nombre)
