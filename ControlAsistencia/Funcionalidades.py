@@ -50,13 +50,9 @@ def crear_registro():
 
     fecha = datetime.now().strftime("%d-%m-%y")
 
-    #VALIDACIÓN DE HORA DE ENTRADA (CON AUTO-FORMATO Y BORRO)
+    # VALIDACIÓN DE HORA DE ENTRADA
     while True:
         entrada = input("Hora de entrada (HH:MM): ").strip()
-
-        # Si escribe 4 números seguidos → convertir a HH:MM
-        if entrada.isdigit() and len(entrada) == 4:
-            entrada = entrada[:2] + ":" + entrada[2:]
 
         if validar_formato_hora(entrada):
             break
@@ -65,7 +61,7 @@ def crear_registro():
         time.sleep(3)
         Borro()
 
-    #VALIDACIÓN DE HORA DE SALIDA (CON AUTO-FORMATO Y BORRO)
+    # VALIDACIÓN DE HORA DE SALIDA
     horas_trabajadas = 0.0
     while True:
         salida = input("Hora de salida (HH:MM, Enter si queda pendiente): ").strip()
@@ -75,10 +71,6 @@ def crear_registro():
             salida = "Pendiente"
             horas_trabajadas = 0.0
             break
-
-        # Si escribe 4 números seguidos → convertir a HH:MM
-        if salida.isdigit() and len(salida) == 4:
-            salida = salida[:2] + ":" + salida[2:]
 
         if validar_formato_hora(salida):
             horas_trabajadas = calcular_horas(entrada, salida)

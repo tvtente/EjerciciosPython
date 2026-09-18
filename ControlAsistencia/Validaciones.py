@@ -2,15 +2,16 @@ import re
 
 
 def validar_formato_hora(hora):
-    """Comprueba que una hora tenga el formato HH:MM entre 00:00 y 23:59.
+    """Devuelve ``True`` solo para horas válidas en formato estricto ``HH:MM``.
 
-    La expresión regular usa ^ y $ para exigir que toda la cadena sea una hora.
-    ([01]\d|2[0-3]) acepta horas de 00 a 19 o de 20 a 23.
-    : exige los dos puntos entre la hora y los minutos.
-    ([0-5]\d) acepta minutos de 00 a 59.
+    Acepta desde ``00:00`` hasta ``23:59``: las horas ``00``–``19``
+    se validan con ``[01][0-9]`` y las ``20``–``23`` con ``2[0-3]``.
     """
-    patron = r"^([01]\d|2[0-3]):([0-5]\d)$"
-    return bool(re.match(patron, hora))
+    if not isinstance(hora, str):
+        return False
+
+    patron = r"(?:[01][0-9]|2[0-3]):[0-5][0-9]"
+    return re.fullmatch(patron, hora) is not None
 
 
 def validar_id_empleado(emp_id):

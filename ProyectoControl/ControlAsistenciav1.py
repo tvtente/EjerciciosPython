@@ -56,14 +56,10 @@ def pedir_hora(mensaje):
         print(mensaje)
         hora_raw = input("  Formato (HH:MM) -> : ").strip()
         
-        # Autocompleta dos puntos si escriben 4 dígitos (ej. 0830 -> 08:30)
-        if len(hora_raw) == 4 and hora_raw.isdigit():
-            hora_raw = f"{hora_raw[:2]}:{hora_raw[2:]}"
-            
         if validar_formato_hora(hora_raw):
             return hora_raw
             
-        print(f"\n{COLOR_ROJO} [X] Error: Formato de hora inválido. Intente de nuevo.{RESET_COLOR}")
+        print(f"\n{COLOR_ROJO} [X] Error: use el formato HH:MM (ejemplo: 12:36).{RESET_COLOR}")
         time.sleep(1.5)
 
 # --- CREAR REGISTRO AUTOMÁTICO Y CONTINUO ---

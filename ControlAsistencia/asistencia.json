@@ -52,5 +52,14 @@
         "entrada": "14:00",
         "salida": "Pendiente",
         "horas_trabajadas": 0.0
+    },
+    {
+        "id": 8,
+        "empleado": "EMP005",
+        "nombre": "Sanjana Kumari",
+        "fecha": "14-09-26",
+        "entrada": "19:30",
+        "salida": "12:36",
+        "horas_trabajadas": -6.9
     }
 ]
