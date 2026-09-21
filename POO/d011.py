@@ -1,10 +1,9 @@
 class Motocicleta:
+    """Representa una motocicleta y las acciones básicas que puede realizar."""
+
     # Atributo de clase
     estado = "nuevo"
 
-    # Presionar F2 para cambiar el nombre en todas las partes del script.
-
-    # Método
     def __init__(
         self,
         color,
@@ -18,7 +17,7 @@ class Motocicleta:
         peso,
         combustible_maximo,
     ):
-        # ATRIBUTOS DE INSTANCIA
+        """Crea una motocicleta con sus atributos de instancia."""
         self.color = color
         self.matricula = matricula
         self.combustible_litros = combustible_litros
@@ -31,30 +30,31 @@ class Motocicleta:
         self.combustible_maximo = combustible_maximo
         self.motor_arrancado = False
 
-    def arrancar(self):  # Mejorar los dos prints
+    def arrancar(self):
+        """Arranca el motor si todavía está apagado."""
         if self.motor_arrancado:
             print(
-                "Se detiene el motor. Se escucha un molesto sonido al girar "
-                "la llave. El motor ya estaba arrancado."
+                "El motor ya estaba arrancado. Se escucha un molesto sonido "
+                "al girar la llave."
             )
         else:
             self.motor_arrancado = True
             print("Se ha arrancado el motor. Bruuuuhm!!!")
 
-    def detener(self):  # Mejorar los dos prints
-        if self.motor_arrancado:  # modifico el if por if not
+    def detener(self):
+        """Detiene el motor si está encendido."""
+        if self.motor_arrancado:
             self.motor_arrancado = False
             print("Se detiene el motor.")
         else:
             print("No puede parar el motor, porque ya está apagado.")
 
     def consultar_precio(self):
-        print(
-            f"El precio de la motocicleta {self.marca} {self.modelo} "
-            f"es de {self.precio} €."
-        )
+        """Muestra el precio asignado a la motocicleta."""
+        print(f"El precio de la motocicleta {self.marca} {self.modelo} es de {self.precio} €.")
 
     def comprobar_deposito(self):
+        """Muestra la cantidad actual y máxima de combustible."""
         print(f"=== REPORTE DE DÉPOSITO DE {self.marca} {self.modelo} ===")
         print(f"El deposito tiene {self.combustible_litros} litros.")
         print(
@@ -63,24 +63,42 @@ class Motocicleta:
         )
         print(
             f"Faltan {self.combustible_maximo - self.combustible_litros} "
-            "litros para llenar el del depósito"
+            "litros para llenar el depósito."
         )
         print("=== FIN DEL REPORTE ===\n")
 
-    def repostar(self):
-        while True:
-            self.repostar_litros = float(
-                input("Por favor, introduzca la cantidad de litros que desea repostar:\n")
-            )
+    def repostar(self, cantidad_combustible):
+        """Añade la cantidad indicada con el motor apagado y sin superar el máximo."""
+        if self.motor_arrancado:
+            print("No se puede repostar con el motor encendido.")
+            return
 
-            if self.combustible_litros + self.repostar_litros <= self.combustible_maximo:
-                print("Repostaje exitoso.")
-                print(f"Se han repostado {self.repostar_litros} litros")
-                self.combustible_litros += self.repostar_litros
-                print(f"El depósito tiene {self.combustible_litros} litros de combustible")
-                break
-
+        if cantidad_combustible <= 0:
+            print("La cantidad debe ser mayor que cero.")
+        elif self.combustible_litros + cantidad_combustible > self.combustible_maximo:
             print("No cabe tanto combustible.")
+        else:
+            self.combustible_litros += cantidad_combustible
+            print("Repostaje exitoso.")
+            print(f"Se han repostado {cantidad_combustible} litros.")
+            print(f"El depósito tiene {self.combustible_litros} litros de combustible.")
+
+    def consumir_combustible(self, litros):
+        """Resta combustible si el depósito tiene la cantidad solicitada."""
+        if litros <= 0:
+            print("El consumo debe ser mayor que cero.")
+        elif litros > self.combustible_litros:
+            print("No hay suficiente combustible.")
+        else:
+            self.combustible_litros -= litros
+            print(f"Combustible restante: {self.combustible_litros} litros.")
+
+    def mostrar_ficha(self):
+        """Muestra los datos principales de la motocicleta."""
+        print(f"{self.marca} {self.modelo}")
+        print(f"Matrícula: {self.matricula}")
+        print(f"Precio: {self.precio} €")
+        print(f"Combustible: {self.combustible_litros}/{self.combustible_maximo} L")
 
 
 # INSTANCIAS de la clase Motocicleta
@@ -116,14 +134,13 @@ motocicleta_yamaha_1.precio = 6000
 motocicleta_harley_1.consultar_precio()
 motocicleta_yamaha_1.consultar_precio()
 
-motocicleta_yamaha_1.arrancar()
-motocicleta_yamaha_1.arrancar()
-
-motocicleta_yamaha_1.detener()
-motocicleta_yamaha_1.detener()
-
 motocicleta_yamaha_1.comprobar_deposito()
-
-motocicleta_yamaha_1.repostar()
-
-# print(f"El precio de la motocicleta{motocicleta_harley_1.marca} {motocicleta_harley_1.modelo} es de {motocicleta_harley_1.precio} €.")
+motocicleta_yamaha_1.arrancar()
+motocicleta_yamaha_1.arrancar()
+motocicleta_yamaha_1.repostar(3)
+motocicleta_yamaha_1.consumir_combustible(5)
+motocicleta_yamaha_1.detener()
+motocicleta_yamaha_1.detener()
+motocicleta_yamaha_1.repostar(3)
+motocicleta_yamaha_1.comprobar_deposito()
+motocicleta_yamaha_1.mostrar_ficha()
