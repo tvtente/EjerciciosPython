@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings />
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="ttk.Frame" id="FramePygubuDesigner" named="True">
+    <property name="height">300</property>
+    <property name="width">400</property>
+    <layout manager="pack">
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="ttk.Label" id="lblNombre" named="True">
+        <property name="text" translatable="yes">Hola mundo</property>
+        <layout manager="pack">
+          <property name="pady">10</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="btnSaludar" named="True">
+        <property name="text" translatable="yes">Saludar</property>
+        <layout manager="pack">
+          <property name="pady">10</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="txtNombre" named="True">
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="padx">10</property>
+          <property name="pady">10</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>
