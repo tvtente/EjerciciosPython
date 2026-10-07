@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 """
-titulo Principal
+hola
 
-Descripcion principal
+hola mundo
 
-UI source file: eventos_pack.ui
+UI source file: saludar.ui
 """
 import pathlib
 import tkinter as tk
@@ -12,7 +12,7 @@ import tkinter.ttk as ttk
 import pygubu
 
 
-class ControlEventosUI:
+class principalUI:
     def __init__(
         self,
         master=None,
@@ -32,7 +32,10 @@ class ControlEventosUI:
         if resource_paths is not None:
             self.builder.add_resource_paths(resource_paths)
         # Main widget
-        self.mainwindow: None = self.builder.get_object("principal", master)
+        self.mainwindow: None = self.builder.get_object("frame1", master)
 
     def run(self):
         self.mainwindow.mainloop()
+
+    def registrar_asistente(self):
+        pass

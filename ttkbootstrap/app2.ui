@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5">
+  <project>
+    <settings />
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="tk.Toplevel" id="app" named="True">
+    <property name="title">Demo Básica de TTKBootstrap</property>
+    <property name="geometry">600x500</property>
+    <child>
+      <object class="ttk.Frame" id="frame_principal" named="True">
+        <property name="padding">20</property>
+        <layout manager="pack">
+          <property name="fill">both</property>
+          <property name="expand">true</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="titulo" named="True">
+            <property name="text">Bienvenido a TTKBootstrap</property>
+            <property name="font">Helvetica 24</property>
+            <layout manager="pack">
+              <property name="pady">20</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="etiqueta_tema" named="True">
+            <property name="text">Tema actual: darkly</property>
+            <property name="font">Helvetica 12</property>
+            <layout manager="pack">
+              <property name="pady">5</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="boton_tema" named="True">
+            <property name="text">Cambiar Tema</property>
+            <layout manager="pack">
+              <property name="pady">10</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Separator" id="separador" named="True">
+            <property name="orient">horizontal</property>
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="pady">20</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="frame_entrada" named="True">
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="pady">10</property>
+            </layout>
+            <child>
+              <object class="ttk.Label" id="etiqueta_mensaje" named="True">
+                <property name="text">Escribe un mensaje:</property>
+                <property name="font">Helvetica 12</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="entrada" named="True">
+                <property name="width">30</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                  <property name="fill">x</property>
+                  <property name="expand">true</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="boton_mensaje" named="True">
+                <property name="text">Mostrar</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Labelframe" id="frame_botones" named="True">
+            <property name="text">Estilos de Botones</property>
+            <property name="padding">10</property>
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="pady">20</property>
+            </layout>
+            <child>
+              <object class="ttk.Button" id="boton_primary" named="True">
+                <property name="text">Primary</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="boton_secondary" named="True">
+                <property name="text">Secondary</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="boton_success" named="True">
+                <property name="text">Success</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="boton_danger" named="True">
+                <property name="text">Danger</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="boton_warning" named="True">
+                <property name="text">Warning</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="boton_info" named="True">
+                <property name="text">Info</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                  <property name="padx">5</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Labelframe" id="frame_controles" named="True">
+            <property name="text">Otros Controles</property>
+            <property name="padding">10</property>
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="pady">10</property>
+            </layout>
+            <child>
+              <object class="ttk.Progressbar" id="progreso" named="True">
+                <property name="orient">horizontal</property>
+                <property name="value">75</property>
+                <property name="maximum">100</property>
+                <layout manager="pack">
+                  <property name="fill">x</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Scale" id="escala" named="True">
+                <property name="from_">0</property>
+                <property name="to">100</property>
+                <property name="value">75</property>
+                <property name="orient">horizontal</property>
+                <layout manager="pack">
+                  <property name="fill">x</property>
+                  <property name="pady">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="frame_checks" named="True">
+                <layout manager="pack">
+                  <property name="fill">x</property>
+                  <property name="pady">10</property>
+                </layout>
+                <child>
+                  <object class="ttk.Checkbutton" id="opcion_1" named="True">
+                    <property name="text">Opción 1</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                      <property name="padx">10</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Checkbutton" id="opcion_2" named="True">
+                    <property name="text">Opción 2</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                      <property name="padx">10</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Checkbutton" id="opcion_3" named="True">
+                    <property name="text">Opción 3</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                      <property name="padx">10</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="pie" named="True">
+        <property name="text">TTKBootstrap - Interfaces modernas para Python</property>
+        <layout manager="pack">
+          <property name="side">bottom</property>
+          <property name="fill">x</property>
+          <property name="pady">5</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>
