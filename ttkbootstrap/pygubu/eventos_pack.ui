@@ -1,0 +1,347 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">titulo del pack </setting>
+      <setting id="description">descripción de pack</setting>
+      <setting id="template">codescript</setting>
+      <setting id="main_widget">principal</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">controleventos_ui</setting>
+      <setting id="main_classname">ControlEventosPack</setting>
+      <setting id="output_dir">.</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2" />
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">False</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file" />
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="ttk.Frame" id="principal" named="True">
+    <property name="padding">18</property>
+    <layout manager="pack">
+      <property name="expand">true</property>
+      <property name="fill">both</property>
+    </layout>
+    <child>
+      <object class="ttk.Label" id="titulo" named="True">
+        <property name="anchor">center</property>
+        <property name="font">{Sans} 20 bold</property>
+        <property name="text" translatable="yes">Control de Entrada a Evento</property>
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="pady">5 20</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Labelframe" id="formulario" named="True">
+        <property name="padding">15</property>
+        <property name="text" translatable="yes">Registrar Nuevo Asistente</property>
+        <layout manager="pack">
+          <property name="fill">x</property>
+        </layout>
+        <child>
+          <object class="ttk.Frame" id="fila_0" named="True">
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="pady">5</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="grupo_nombre" named="True">
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="padx">5</property>
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="etiqueta_nombre" named="True">
+                    <property name="text" translatable="yes">Nombre:</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="entrada_nombre" named="True">
+                    <property name="width">24</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="grupo_apellidos" named="True">
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="padx">5</property>
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="etiqueta_apellidos" named="True">
+                    <property name="text" translatable="yes">Apellidos:</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="entrada_apellidos" named="True">
+                    <property name="width">24</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="fila_1" named="True">
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="pady">5</property>
+            </layout>
+            <child>
+              <object class="ttk.Frame" id="grupo_correo" named="True">
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="padx">5</property>
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="etiqueta_correo" named="True">
+                    <property name="text" translatable="yes">Correo:</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Entry" id="entrada_correo" named="True">
+                    <property name="width">24</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Frame" id="grupo_categoria" named="True">
+                <layout manager="pack">
+                  <property name="expand">true</property>
+                  <property name="fill">x</property>
+                  <property name="padx">5</property>
+                  <property name="side">left</property>
+                </layout>
+                <child>
+                  <object class="ttk.Label" id="etiqueta_categoria" named="True">
+                    <property name="text" translatable="yes">Categoría:</property>
+                    <property name="width">10</property>
+                    <layout manager="pack">
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="ttk.Combobox" id="entrada_categoria" named="True">
+                    <property name="state">readonly</property>
+                    <property name="values">General VIP Ponente Organización</property>
+                    <property name="width">24</property>
+                    <layout manager="pack">
+                      <property name="expand">true</property>
+                      <property name="fill">x</property>
+                      <property name="side">left</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="registrar" named="True">
+            <property name="style">success.TButton</property>
+            <property name="text" translatable="yes">Registrar Entrada</property>
+            <layout manager="pack">
+              <property name="fill">x</property>
+              <property name="padx">5</property>
+              <property name="pady">12 5</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="filtros" named="True">
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="pady">15</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="etiqueta_buscar" named="True">
+            <property name="text" translatable="yes">Buscar:</property>
+            <layout manager="pack">
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Entry" id="entrada_buscar" named="True">
+            <property name="width">28</property>
+            <layout manager="pack">
+              <property name="padx">8</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="total" named="True">
+            <property name="text" translatable="yes">Total asistentes: 0</property>
+            <layout manager="pack">
+              <property name="side">right</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="tabla_marco" named="True">
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+        </layout>
+        <child>
+          <object class="ttk.Scrollbar" id="scroll" named="True">
+            <property name="orient">vertical</property>
+            <layout manager="pack">
+              <property name="fill">y</property>
+              <property name="side">right</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Treeview" id="tabla" named="True">
+            <property name="height">10</property>
+            <property name="show">headings</property>
+            <layout manager="pack">
+              <property name="expand">true</property>
+              <property name="fill">both</property>
+            </layout>
+            <child>
+              <object class="ttk.Treeview.Column" id="id" named="True">
+                <property name="column_anchor">w</property>
+                <property name="minwidth">40</property>
+                <property name="stretch">true</property>
+                <property name="text" translatable="yes">ID</property>
+                <property name="width">45</property>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Treeview.Column" id="nombre" named="True">
+                <property name="column_anchor">w</property>
+                <property name="minwidth">40</property>
+                <property name="stretch">true</property>
+                <property name="text" translatable="yes">Nombre</property>
+                <property name="width">110</property>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Treeview.Column" id="apellidos" named="True">
+                <property name="column_anchor">w</property>
+                <property name="minwidth">40</property>
+                <property name="stretch">true</property>
+                <property name="text" translatable="yes">Apellidos</property>
+                <property name="width">130</property>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Treeview.Column" id="correo" named="True">
+                <property name="column_anchor">w</property>
+                <property name="minwidth">40</property>
+                <property name="stretch">true</property>
+                <property name="text" translatable="yes">Correo</property>
+                <property name="width">190</property>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Treeview.Column" id="categoria" named="True">
+                <property name="column_anchor">w</property>
+                <property name="minwidth">40</property>
+                <property name="stretch">true</property>
+                <property name="text" translatable="yes">Categoría</property>
+                <property name="width">105</property>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Treeview.Column" id="hora_entrada" named="True">
+                <property name="column_anchor">w</property>
+                <property name="minwidth">40</property>
+                <property name="stretch">true</property>
+                <property name="text" translatable="yes">Hora de entrada</property>
+                <property name="width">165</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="acciones" named="True">
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="pady">15 8</property>
+        </layout>
+        <child>
+          <object class="ttk.Button" id="ver_json" named="True">
+            <property name="text" translatable="yes">Ver JSON</property>
+            <layout manager="pack">
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="exportar" named="True">
+            <property name="style">success.TButton</property>
+            <property name="text" translatable="yes">Exportar JSON…</property>
+            <layout manager="pack">
+              <property name="padx">10</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="estado" named="True">
+        <property name="text" translatable="yes">Guardado automático en asistentes.json</property>
+        <property name="wraplength">780</property>
+        <layout manager="pack">
+          <property name="anchor">w</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>

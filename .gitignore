@@ -16,3 +16,25 @@
 # Archivos locales generados por Python y VS Code.
 __pycache__/
 .vscode/
+
+# Entornos virtuales de Python.
+.venv/
+venv/
+env/
+**/.venv/
+
+# Archivos compilados y cachés de Python.
+*.py[cod]
+*$py.class
+
+# Archivos temporales de Jupyter.
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Resultados generados por herramientas de empaquetado.
+build/
+dist/
+
+# Copias de trabajo generadas por el proyecto de Excel.
+Excel/BDD/BaseDatosProyecto_trabajo.xlsx
+Excel/BDD/BaseDatosProyecto_consola.xlsx

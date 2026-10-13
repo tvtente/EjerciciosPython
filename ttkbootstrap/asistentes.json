@@ -1,0 +1,18 @@
+[
+  {
+    "nombre": "Gustavo",
+    "apellidos": "Moyano",
+    "correo": "gustavomoyano@gmail.com",
+    "categoria": "General",
+    "id": 1,
+    "hora_entrada": "2026-10-05T11:46:37+02:00"
+  },
+  {
+    "nombre": "mario",
+    "apellidos": "cabezas",
+    "correo": "mario@gmail.com",
+    "categoria": "General",
+    "id": 2,
+    "hora_entrada": "2026-10-05T11:47:12+02:00"
+  }
+]

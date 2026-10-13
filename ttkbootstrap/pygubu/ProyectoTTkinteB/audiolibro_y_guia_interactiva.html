@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audiolibro Interactivo: Código Python de Control de Acceso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'Fira Code', monospace; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col overflow-hidden">
+
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between shadow-md shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-500/30 flex items-center justify-center">
+                <i class="fa-solid fa-headphones text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Audiolibro Interactivo: Control de Acceso Ttkbootstrap</h1>
+                <p class="text-xs text-slate-400">Escucha la explicación paso a paso mientras exploras el código fuente analizado.</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button id="master-play-btn" onclick="togglePlayAll()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-lg shadow-indigo-600/20 flex items-center space-x-2">
+                <i class="fa-solid fa-play id-master-icon"></i>
+                <span id="master-play-text">Reproducción Automática</span>
+            </button>
+            <div class="text-xs bg-slate-800 text-slate-300 px-3 py-2 rounded-lg border border-slate-700">
+                Progreso: <span id="progress-indicator" class="font-bold text-indigo-400">0 / 8</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden">
+        
+        <!-- Left Pane: Audiobook Script and Chapters -->
+        <section class="w-1/2 flex flex-col border-r border-slate-800 bg-slate-900/50">
+            <div class="p-4 border-b border-slate-800 bg-slate-900 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-book-open text-indigo-400"></i>
+                    <span>Capítulos del Audiolibro</span>
+                </h2>
+                <div class="text-xs text-slate-400">Voz: IA (Español Natural)</div>
+            </div>
+            
+            <div id="chapters-container" class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+                <!-- Chapters injected dynamically via JS -->
+            </div>
+        </section>
+
+        <!-- Right Pane: Code Viewer with Line Highlights -->
+        <section class="w-1/2 flex flex-col bg-slate-950">
+            <div class="p-4 border-b border-slate-800 bg-slate-900 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-wider flex items-center space-x-2">
+                    <i class="fa-solid fa-code text-cyan-400"></i>
+                    <span>Código Fuente: Ejercicio1Ttkboostrap.py</span>
+                </h2>
+                <span class="text-xs bg-slate-800 text-cyan-400 px-2.5 py-1 rounded-md border border-cyan-900/50">Python GUI</span>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-4 bg-slate-950 text-xs font-mono">
+                <pre id="code-viewer" class="leading-relaxed"></pre>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Complete code lines for the viewer
+        const codeLines = [
+            "# Nombre del archivo JSON donde se guardarán los datos",
+            'JSON_FILE = "asistentes.json"',
+            "",
+            "class ControlAccesoApp:",
+            "    def __init__(self, root):",
+            "        self.root = root",
+            '        self.root.title("Control de Acceso a Eventos")',
+            '        self.root.geometry("850x600")',
+            "        self.root.minsize(750, 500)",
+            "",
+            "        # Cargar datos existentes si el archivo JSON ya existe",
+            "        self.asistentes = self.cargar_datos()",
+            "",
+            "        # --- CONTENEDOR PRINCIPAL ---",
+            "        main_frame = ttk.Frame(self.root, padding=20)",
+            "        main_frame.pack(fill=BOTH, expand=YES)",
+            "",
+            "        # Título de la aplicación",
+            "        titulo = ttk.Label(",
+            "            main_frame, ",
+            '            text="Control de Entrada a Evento", ',
+            '            font=("Helvetica", 18, "bold"), ',
+            '            bootstyle="primary"',
+            "        )",
+            '        titulo.pack(pady=(0, 15))',
+            "",
+            "        # --- SECCIÓN DE FORMULARIO ---",
+            '        form_frame = ttk.LabelFrame(main_frame, text=" Registrar Nuevo Asistente ", padding=15, bootstyle="info")',
+            "        form_frame.pack(fill=X, padx=5, pady=5)",
+            "",
+            "        # Nombre",
+            '        ttk.Label(form_frame, text="Nombre:").grid(row=0, column=0, sticky=W, padx=5, pady=5)',
+            "        self.entry_nombre = ttk.Entry(form_frame, width=25)",
+            "        self.entry_nombre.grid(row=0, column=1, padx=5, pady=5)",
+            "",
+            "        # Apellidos",
+            '        ttk.Label(form_frame, text="Apellidos:").grid(row=0, column=2, sticky=W, padx=5, pady=5)',
+            "        self.entry_apellidos = ttk.Entry(form_frame, width=25)",
+            "        self.entry_apellidos.grid(row=0, column=3, padx=5, pady=5)",
+            "",
+            "        # Correo Electrónico",
+            '        ttk.Label(form_frame, text="Correo:").grid(row=1, column=0, sticky=W, padx=5, pady=5)',
+            "        self.entry_correo = ttk.Entry(form_frame, width=25)",
+            "        self.entry_correo.grid(row=1, column=1, padx=5, pady=5)",
+            "",
+            "        # Tipo de Entrada / Categoría",
+            '        ttk.Label(form_frame, text="Categoría:").grid(row=1, column=2, sticky=W, padx=5, pady=5)',
+            "        self.combo_categoria = ttk.Combobox(",
+            "            form_frame, ",
+            '            values=["General", "VIP", "Prensa", "Ponente", "Staff"], ',
+            "            width=23, ",
+            '            state="readonly"',
+            "        )",
+            "        self.combo_categoria.grid(row=1, column=3, padx=5, pady=5)",
+            '        self.combo_categoria.set("General")',
+            "",
+            "        # Botón de Registro",
+            "        btn_registrar = ttk.Button(",
+            "            form_frame, ",
+            '            text="Registrar Entrada", ',
+            "            command=self.registrar_asistente, ",
+            '            bootstyle="success"',
+            "        )",
+            "        btn_registrar.grid(row=2, column=0, columnspan=4, pady=15, sticky=EW)",
+            "",
+            "        # --- SECCIÓN DE BÚSQUEDA Y TABLA ---",
+            "        search_frame = ttk.Frame(main_frame)",
+            "        search_frame.pack(fill=X, padx=5, pady=(15, 5))",
+            "",
+            '        ttk.Label(search_frame, text="Buscar:", font=("Helvetica", 10, "bold")).pack(side=LEFT, padx=(0, 5))',
+            "        self.entry_buscar = ttk.Entry(search_frame, width=30)",
+            "        self.entry_buscar.pack(side=LEFT, padx=5)",
+            '        self.entry_buscar.bind("<KeyRelease>", self.filtrar_tabla)',
+            "",
+            "        # Contador de asistentes",
+            '        self.lbl_contador = ttk.Label(search_frame, text="", font=("Helvetica", 10, "bold"), bootstyle="secondary")',
+            "        self.lbl_contador.pack(side=RIGHT, padx=5)",
+            "",
+            "        # Tabla de Registros (Treeview)",
+            "        table_frame = ttk.Frame(main_frame)",
+            "        table_frame.pack(fill=BOTH, expand=YES, padx=5, pady=5)",
+            "",
+            '        columnas = ("id", "nombre", "apellidos", "correo", "categoria", "hora")',
+            '        self.tabla = ttk.Treeview(table_frame, columns=columnas, show="headings", bootstyle="info")',
+            "",
+            "        # Cabeceras y anchos",
+            '        self.tabla.heading("id", text="ID")',
+            '        self.tabla.heading("nombre", text="Nombre")',
+            '        self.tabla.heading("apellidos", text="Apellidos")',
+            '        self.tabla.heading("correo", text="Correo")',
+            '        self.tabla.heading("categoria", text="Categoría")',
+            '        self.tabla.heading("hora", text="Hora de Entrada")',
+            "",
+            "        self.tabla.column",
+            "        scrollbar = ttk.Scrollbar(table_frame, orient=VERTICAL, command=self.tabla.yview)",
+            "        self.tabla.configure(yscrollcommand=scrollbar.set)",
+            "        self.tabla.pack(side=LEFT, fill=BOTH, expand=YES)",
+            "        scrollbar.pack(side=RIGHT, fill=Y)",
+            "        self.actualizar_tabla(self.asistentes)",
+            "",
+            "    def cargar_datos(self):",
+            "        if os.path.exists(JSON_FILE):",
+            "            try:",
+            '                with open(JSON_FILE, "r", encoding="utf-8") as f:',
+            "                    return json.load(f)",
+            "            except Exception as e:",
+            '                messagebox.showerror("Error", f"No se pudo leer el archivo JSON:\\n{e}")',
+            "                return []",
+            "        return []",
+            "",
+            "    def guardar_datos(self):",
+            "        try:",
+            '            with open(JSON_FILE, "w", encoding="utf-8") as f:',
+            "                json.dump(self.asistentes, f, indent=4, ensure_ascii=False)",
+            "        except Exception as e:",
+            '            messagebox.showerror("Error", f"No se pudo guardar el archivo JSON:\\n{e}")',
+            "",
+            "    def registrar_asistente(self):",
+            "        nombre = self.entry_nombre.get().strip()",
+            "        apellidos = self.entry_apellidos.get().strip()",
+            "        correo = self.entry_correo.get().strip()",
+            "        categoria = self.combo_categoria.get()",
+            "        if not nombre or not apellidos or not correo:",
+            '            messagebox.showwarning("Campos vacíos", "Por favor completa Nombre, Apellidos y Correo.")',
+            "            return",
+            "        nuevo_id = len(self.asistentes) + 1",
+            '        hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")',
+            "        nuevo_registro = {",
+            '            "id": nuevo_id, "nombre": nombre, "apellidos": apellidos,',
+            '            "correo": correo, "categoria": categoria, "hora": hora_actual',
+            "        }",
+            "        self.asistentes.append(nuevo_registro)",
+            "        self.guardar_datos()",
+            "        self.actualizar_tabla(self.asistentes)",
+            "        self.limpiar_formulario()",
+            '        messagebox.showinfo("Éxito", f"¡Asistente {nombre} registrado correctamente!")',
+            "",
+            "    def actualizar_tabla(self, lista_asistentes):",
+            "        for item in self.tabla.get_children():",
+            "            self.tabla.delete(item)",
+            "        for a in lista_asistentes:",
+            '            self.tabla.insert("", END, values=(a["id"], a["nombre"], a["apellidos"], a["correo"], a["categoria"], a["hora"]))',
+            "        total = len(self.asistentes)",
+            "        registrados_filtrados = len(lista_asistentes)",
+            "        if total == registrados_filtrados:",
+            '            self.lbl_contador.config(text=f"Total Asistentes: {total}")',
+            "        else:",
+            '            self.lbl_contador.config(text=f"Mostrando: {registrados_filtrados} de {total}")',
+            "",
+            "    def filtrar_tabla(self, event):",
+            '        texto_busqueda = self.entry_buscar.get().lower()',
+            "        if not texto_busqueda:",
+            "            self.actualizar_tabla(self.asistentes)",
+            "            return",
+            "        filtrados = [",
+            "            a for a in self.asistentes ",
+            '            if texto_busqueda in a["nombre"].lower() ',
+            '            or texto_busqueda in a["apellidos"].lower() ',
+            '            or texto_busqueda in a["correo"].lower()',
+            '            or texto_busqueda in a["categoria"].lower()',
+            "        ]",
+            "        self.actualizar_tabla(filtrados)",
+            "",
+            "    def limpiar_formulario(self):",
+            "        self.entry_nombre.delete(0, END)",
+            "        self.entry_apellidos.delete(0, END)",
+            "        self.entry_correo.delete(0, END)",
+            '        self.combo_categoria.set("General")',
+            "        self.entry_nombre.focus()",
+            "",
+            'if __name__ == "__main__":',
+            '    app = ttk.Window(themename="flatly")',
+            "    ControlAccesoApp(app)",
+            "    app.mainloop()"
+        ];
+
+        // Audiobook Chapters Data with line ranges
+        const chapters = [
+            {
+                id: 1,
+                title: "1. Importaciones y Constante JSON",
+                description: "Comenzamos importando los módulos nativos json, os, datetime, junto con la librería gráfica moderna ttkbootstrap y messagebox de tkinter. Definimos la constante JSON_FILE donde se almacenará persistencia local.",
+                startLine: 0,
+                endLine: 2,
+                audioText: "Bienvenidos al audiolibro del sistema de control de acceso. En este primer capítulo importamos las librerías necesarias. 'json' para el almacenamiento de registros, 'os' para verificar archivos en el disco, 'datetime' para registrar la hora exacta de entrada, y 'ttkbootstrap' junto a su constante de advertencias para dar un diseño visual moderno a la interfaz de usuario."
+            },
+            {
+                id: 2,
+                title: "2. Constructor __init__ y Ventana Principal",
+                description: "Definimos la clase principal ControlAccesoApp. Configuramos el título de la ventana, dimensiones fijas de 850x600, tamaño mínimo y la carga inicial de datos llamando a cargar_datos().",
+                startLine: 3,
+                endLine: 11,
+                audioText: "Capítulo dos. Inicializamos la clase 'ControlAccesoApp'. Configuramos la ventana principal con el método root.title, establecemos una dimensión de ochocientos cincuenta por seiscientos píxeles y cargamos inmediatamente cualquier registro previo almacenado en el disco mediante self.cargar_datos."
+            },
+            {
+                id: 3,
+                title: "3. Diseño del Contenedor y Formulario",
+                description: "Construimos el contenedor principal y el LabelFrame de registro. Organizamos con el gestor grid los campos de Nombre, Apellidos, Correo Electrónico y una lista desplegable (Combobox) de categorías.",
+                startLine: 12,
+                endLine: 49,
+                audioText: "Capítulo tres. Creamos la interfaz gráfica estructurada. Primero un marco contenedor principal y luego un LabelFrame estilizado para el formulario de registro. Usamos geometría en cuadrícula o grid para colocar ordenadamente las entradas de texto para nombre, apellidos, correo y un selector desplegable o Combobox con opciones como General, VIP, Prensa, Ponente y Staff."
+            },
+            {
+                id: 4,
+                title: "4. Botón de Registro y Eventos",
+                description: "Agregamos el botón principal 'Registrar Entrada' con un estilo verde de éxito (success), vinculado al método registrar_asistente.",
+                startLine: 50,
+                endLine: 58,
+                audioText: "Capítulo cuatro. Añadimos el botón de registro con el estilo 'success' de ttkbootstrap, el cual al ser presionado disparará la función principal de guardado y validación de datos del asistente."
+            },
+            {
+                id: 5,
+                title: "5. Búsqueda en Tiempo Real y Tabla Treeview",
+                description: "Configuramos la sección de búsqueda interactiva con vinculación de eventos por teclado (<KeyRelease>) y creamos el componente Treeview que simula una tabla completa con columnas y scrollbar.",
+                startLine: 59,
+                endLine: 98,
+                audioText: "Capítulo cinco. Implementamos el buscador en tiempo real y la tabla de registros usando el componente Treeview. Gracias al evento KeyRelease en la caja de búsqueda, la tabla se filtra de manera inmediata sin necesidad de presionar un botón adicional."
+            },
+            {
+                id: 6,
+                title: "6. Persistencia de Datos (Cargar y Guardar JSON)",
+                description: "Métodos clave para leer y escribir en el archivo 'asistentes.json' con manejo robusto de excepciones (try-except) para evitar cierres inesperados.",
+                startLine: 99,
+                endLine: 119,
+                audioText: "Capítulo seis. La persistencia de datos. Los métodos cargar_datos y guardar_datos aseguran que toda la información introducida se guarde en formato JSON estructurado y con codificación UTF-8, previniendo errores mediante bloques try-except."
+            },
+            {
+                id: 7,
+                title: "7. Lógica de Negocio: Registro, Filtro y Limpieza",
+                description: "Validación de campos vacíos, generación de ID automático incremental, almacenamiento de timestamp actual, actualización de tabla y limpieza de entradas.",
+                startLine: 120,
+                endLine: 172,
+                audioText: "Capítulo siete. La lógica de negocio y validación. Al pulsar registrar, el sistema comprueba que los campos obligatorios no estén vacíos. Luego genera un identificador único incremental, captura la fecha y hora exacta con datetime, actualiza el archivo JSON, refresca la tabla y limpia el formulario para el siguiente asistente."
+            },
+            {
+                id: 8,
+                title: "8. Arranque de la Aplicación (Main)",
+                description: "Inicialización del motor ttkbootstrap con el tema moderno 'flatly', instanciación de la clase y ejecución del bucle principal app.mainloop().",
+                startLine: 173,
+                endLine: 178,
+                audioText: "Capítulo ocho y final. El punto de entrada del script. Inicializamos la ventana principal de ttkbootstrap aplicando el elegante tema 'flatly', instanciamos nuestra clase de control de acceso y lanzamos el bucle principal app.mainloop para mantener la aplicación activa."
+            }
+        ];
+
+        let currentChapterIndex = 0;
+        let isPlayingAll = false;
+        let currentUtterance = null;
+
+        // Render Code Viewer with line numbers
+        function renderCode() {
+            const container = document.getElementById("code-viewer");
+            container.innerHTML = codeLines.map((line, idx) => {
+                const escaped = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                return `<div id="line-${idx}" class="flex px-2 py-0.5 transition-colors duration-200">
+                    <span class="w-8 text-slate-600 select-none text-right pr-4">${idx + 1}</span>
+                    <span class="flex-1 text-slate-300">${escaped}</span>
+                </div>`;
+            }).join("");
+        }
+
+        // Render Chapters List
+        function renderChapters() {
+            const container = document.getElementById("chapters-container");
+            container.innerHTML = chapters.map((ch, idx) => `
+                <div id="chapter-card-${idx}" class="p-4 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-indigo-500/50 transition-all cursor-pointer group" onclick="selectChapter(${idx})">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Capítulo ${ch.id}</span>
+                        <button onclick="event.stopPropagation(); playChapter(${idx})" class="w-8 h-8 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center shadow-md shadow-indigo-600/30 transition-transform active:scale-95">
+                            <i id="play-icon-${idx}" class="fa-solid fa-play text-xs"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-semibold text-slate-200 text-sm group-hover:text-indigo-300 transition-colors">${ch.title}</h3>
+                    <p class="text-xs text-slate-400 mt-1 leading-relaxed">${ch.description}</p>
+                </div>
+            `).join("");
+        }
+
+        function highlightLines(start, end) {
+            // Reset previous highlights
+            for (let i = 0; i < codeLines.length; i++) {
+                const el = document.getElementById(`line-${i}`);
+                if (el) {
+                    el.classList.remove("bg-indigo-950/80", "border-l-2", "border-indigo-400");
+                }
+            }
+            // Highlight target range
+            for (let i = start; i <= end; i++) {
+                const el = document.getElementById(`line-${i}`);
+                if (el) {
+                    el.classList.add("bg-indigo-950/80", "border-l-2", "border-indigo-400");
+                    if (i === start) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }
+        }
+
+        function selectChapter(idx) {
+            currentChapterIndex = idx;
+            const ch = chapters[idx];
+            highlightLines(ch.startLine, ch.endLine);
+            
+            // Visual card selection feedback
+            chapters.forEach((_, i) => {
+                const card = document.getElementById(`chapter-card-${i}`);
+                if (card) {
+                    if (i === idx) {
+                        card.classList.add("border-indigo-500", "bg-slate-800/90");
+                    } else {
+                        card.classList.remove("border-indigo-500", "bg-slate-800/90");
+                    }
+                }
+            });
+            document.getElementById("progress-indicator").textContent = `${idx + 1} / ${chapters.length}`;
+        }
+
+        function playChapter(idx) {
+            window.speechSynthesis.cancel();
+            selectChapter(idx);
+            const ch = chapters[idx];
+            
+            // Reset icons
+            chapters.forEach((_, i) => {
+                const icon = document.getElementById(`play-icon-${i}`);
+                if (icon) icon.className = "fa-solid fa-play text-xs";
+            });
+
+            const currentIcon = document.getElementById(`play-icon-${idx}`);
+            if (currentIcon) currentIcon.className = "fa-solid fa-spinner fa-spin text-xs";
+
+            currentUtterance = new SpeechSynthesisUtterance(ch.audioText);
+            currentUtterance.lang = 'es-ES';
+            currentUtterance.rate = 1.0;
+
+            currentUtterance.onend = () => {
+                if (currentIcon) currentIcon.className = "fa-solid fa-play text-xs";
+                if (isPlayingAll && idx + 1 < chapters.length) {
+                    playChapter(idx + 1);
+                } else if (isPlayingAll) {
+                    stopPlayAll();
+                }
+            };
+
+            currentUtterance.onerror = () => {
+                if (currentIcon) currentIcon.className = "fa-solid fa-play text-xs";
+            };
+
+            window.speechSynthesis.speak(currentUtterance);
+        }
+
+        function togglePlayAll() {
+            if (isPlayingAll) {
+                stopPlayAll();
+            } else {
+                isPlayingAll = true;
+                document.getElementById("master-play-text").textContent = "Pausar Audiolibro";
+                document.querySelector(".id-master-icon").className = "fa-solid fa-pause id-master-icon";
+                playChapter(currentChapterIndex);
+            }
+        }
+
+        function stopPlayAll() {
+            isPlayingAll = false;
+            window.speechSynthesis.cancel();
+            document.getElementById("master-play-text").textContent = "Reproducción Automática";
+            document.querySelector(".id-master-icon").className = "fa-solid fa-play id-master-icon";
+            chapters.forEach((_, i) => {
+                const icon = document.getElementById(`play-icon-${i}`);
+                if (icon) icon.className = "fa-solid fa-play text-xs";
+            });
+        }
+
+        window.onload = () => {
+            renderCode();
+            renderChapters();
+            selectChapter(0);
+        };
+    </script>
+
+</body>
+</html>

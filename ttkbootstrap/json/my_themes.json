@@ -1,0 +1,27 @@
+{
+  "themes": [
+    {
+      "custom_name": {
+        "type": "dark",
+        "colors": {
+          "primary": "#818cf8",
+          "secondary": "#64748b",
+          "success": "#34d399",
+          "info": "#38bdf8",
+          "warning": "#fbbf24",
+          "danger": "#fb7185",
+          "light": "#f1f5f9",
+          "dark": "#0f172a",
+          "bg": "#182235",
+          "fg": "#f1f5f9",
+          "selectbg": "#4338ca",
+          "selectfg": "#ffffff",
+          "border": "#64748b",
+          "inputfg": "#f1f5f9",
+          "inputbg": "#0f172a",
+          "active": "#334155"
+        }
+      }
+    }
+  ]
+}
