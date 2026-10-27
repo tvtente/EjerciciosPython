@@ -1,3 +1,18 @@
+
+class Semaforo:
+    
+    COLORES = {1:"Verde", 2:"Amarillo", 3:"Rojo"}
+    
+    def __init__(self):
+        self.color = None
+        
+    def cambiar_color(self, color):
+        if color in self.COLORES.values():
+            self.color = color
+        else:
+            raise ValueError(f"Color inválido. Los colores a seleccionar son: {', '.join(self.COLORES.values())}") 
+        
+        
 def limpiar_pantalla():
     import os
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -7,18 +22,23 @@ def mostrar_menu():
     print("1. Verde")
     print("2. Amarillo")
     print("3. Rojo")
-    opcion = input("Ingrese el número correspondiente al color (1-3): ")
+    print("0. Salir")
+    opcion = input("Ingrese una opción (0-3): ").strip()
 
-    match opcion:
-        case "1":
-            return "Verde"
-        case "2":
-            return "Amarillo"
-        case "3":
-            return "Rojo"
-        case _:
-            print("Opción no válida. Intente nuevamente.")
-            return mostrar_menu()
+    if opcion == "0":
+        return "Salir"
+
+    try:
+        numero = int(opcion)
+        color = Semaforo.COLORES[numero]
+    except (ValueError, KeyError):
+        print("Opción no válida. Debe introducir 1, 2 o 3.")
+        input("Presione Enter para intentarlo de nuevo...")
+        return None
+
+    semaforo = Semaforo()
+    semaforo.cambiar_color(color)
+    return semaforo.color
 
 while True:
     try:
@@ -26,20 +46,24 @@ while True:
 
         color = mostrar_menu()
 
+        if color is None:
+            continue
+
         match color:
             case "Verde":
-                print("🟢 Puede pasar")
-
+                print("[VERDE] Puede pasar")
             case "Amarillo":
-                print("🟡 Precaución")
-
+                print("[AMARILLO] Precaución")
             case "Rojo":
-                print("🔴 Stop")
+                print("[ROJO] Stop")
+            case "Salir":
+                print("Programa finalizado.")
                 break
-
             case _:
                 print("Color no válido")
 
-    except KeyboardInterrupt:
-        print("\n¡HASTA MAÑANA!")
+        input("\nPresione Enter para continuar...")
+
+    except (KeyboardInterrupt, EOFError):
+        print("\n¡Ha cerrado el programa de semáforo!")
         break    

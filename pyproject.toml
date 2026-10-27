@@ -1,0 +1,13 @@
+[project]
+name = "ejerciciospython"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "pygubu>=0.42.1",
+    "ttkbootstrap>=2.2.3",
+]
+
+[dependency-groups]
+dev = [
+    "pygubu-designer>=0.46.2",
+]

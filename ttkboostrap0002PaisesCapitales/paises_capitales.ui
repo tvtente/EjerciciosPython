@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface version="1.4">
+  <object class="ttk.Frame" id="contenedor">
+    <property name="padding">30</property>
+    <layout manager="pack">
+      <property name="expand">true</property>
+      <property name="fill">both</property>
+    </layout>
+
+    <child>
+      <object class="ttk.Label" id="titulo">
+        <property name="font">{Segoe UI} 20 bold</property>
+        <property name="text">Países y capitales</property>
+        <layout manager="pack">
+          <property name="pady">0 20</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+
+    <child>
+      <object class="ttk.Label" id="etiqueta_pais">
+        <property name="text">Selecciona un país:</property>
+        <layout manager="pack">
+          <property name="anchor">w</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+
+    <child>
+      <object class="ttk.Combobox" id="selector_pais">
+        <property name="state">readonly</property>
+        <property name="textvariable">string:pais_seleccionado</property>
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="pady">5 18</property>
+          <property name="side">top</property>
+        </layout>
+        <bind add="" handler="mostrar_capital" sequence="&lt;&lt;ComboboxSelected&gt;&gt;"/>
+      </object>
+    </child>
+
+    <child>
+      <object class="ttk.Label" id="etiqueta_resultado">
+        <property name="font">{Segoe UI} 12 bold</property>
+        <property name="textvariable">string:resultado</property>
+        <layout manager="pack">
+          <property name="pady">10</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+
+    <child>
+      <object class="ttk.Frame" id="botones">
+        <layout manager="pack">
+          <property name="pady">15</property>
+          <property name="side">top</property>
+        </layout>
+
+        <child>
+          <object class="ttk.Button" id="boton_buscar">
+            <property name="command" type="command" cbtype="simple">mostrar_capital</property>
+            <property name="text">Buscar</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+
+        <child>
+          <object class="ttk.Button" id="boton_limpiar">
+            <property name="command" type="command" cbtype="simple">limpiar</property>
+            <property name="text">Limpiar</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+
+        <child>
+          <object class="ttk.Button" id="boton_salir">
+            <property name="command" type="command" cbtype="simple">salir</property>
+            <property name="text">Salir</property>
+            <layout manager="pack">
+              <property name="padx">5</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
