@@ -1,0 +1,32 @@
+{
+  "defaultMaxRows": 100,
+  "connections": [
+    {
+      "id": "Gestión-local",
+      "name": "Gestion Pedidos MySQL local",
+      "type": "mysql",
+      "host": "localhost",
+      "port": 3306,
+      "database": "gestion_de_pedidos",
+      "username": "root",
+      "passwordEnv": "QUERYDECK_MYSQL_PASSWORD",
+      "sslMode": "disable",
+      "color": "blue",
+      "readOnlyDefault": true
+    },
+    {
+      "id": "ventas-mysql",
+      "name": "Ventas MySQL",
+      "type": "mysql",
+      "host": "localhost",
+      "port": 3306,
+      "database": "ventas",
+      "username": "root",
+      "passwordEnv": "QUERYDECK_MYSQL_PASSWORD",
+      "sslMode": "disable",
+      "color": "green",
+      "readOnlyDefault": true
+    }
+  ],
+  "queryMemory": []
+}

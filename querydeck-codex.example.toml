@@ -1,0 +1,7 @@
+[mcp_servers.querydeck]
+command = "/home/tvt/.nvm/versions/node/v22.23.3/bin/node"
+args = ["/home/tvt/.vscode/extensions/vs-code-database-client.vscode-data-grip-0.0.17/dist/mcpServer.js"]
+
+[mcp_servers.querydeck.env]
+QUERYDECK_MCP_CONFIG = "/home/tvt/MEGA/EjerciciosPython/querydeck-northwind.json"
+QUERYDECK_MYSQL_PASSWORD = "@ng3lBTeVeTD"

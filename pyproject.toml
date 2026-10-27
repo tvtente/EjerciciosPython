@@ -1,13 +1,24 @@
 [project]
-name = "ejerciciospython"
+name = "ejercicios-python"
 version = "0.1.0"
-requires-python = ">=3.14"
+description = "Entorno compartido de los ejercicios Python, bases de datos e interfaces"
+requires-python = ">=3.12"
 dependencies = [
-    "pygubu>=0.42.1",
-    "ttkbootstrap>=2.2.3",
+    "mysql-connector-python>=9.2",
+    "sqlalchemy>=2.0,<3",
+    "ttkbootstrap>=2.2,<3",
+    "pygubu>=0.39,<1",
+    "pandas>=2.2",
+    "openpyxl>=3.1",
+    "reportlab>=4",
 ]
 
+[project.optional-dependencies]
+designer = ["pygubu-designer>=0.41,<1"]
+qt = ["pyside6>=6.8; python_version < '3.15'"]
+
 [dependency-groups]
-dev = [
-    "pygubu-designer>=0.46.2",
-]
+dev = ["pygubu-designer>=0.46.2,<1"]
+
+[tool.uv]
+package = false
