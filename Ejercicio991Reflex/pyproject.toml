@@ -1,0 +1,20 @@
+[project]
+name = "ejercicio991reflex"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "tvtente", email = "tvt.mente@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=3.1.0",
+    "xy[reflex]==0.0.7",
+]
+
+[project.scripts]
+ejercicio991reflex = "ejercicio991reflex:main"
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"

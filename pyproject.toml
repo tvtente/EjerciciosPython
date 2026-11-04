@@ -11,6 +11,7 @@ dependencies = [
     "pandas>=2.2",
     "openpyxl>=3.1",
     "reportlab>=4",
+    "reflex>=0.10.1",
 ]
 
 [project.optional-dependencies]
@@ -22,3 +23,9 @@ dev = ["pygubu-designer>=0.46.2,<1"]
 
 [tool.uv]
 package = false
+
+[tool.uv.workspace]
+members = [
+    "Ejercicio991Reflex/Video1",
+    "Ejercicio991Reflex",
+]
