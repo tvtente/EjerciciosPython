@@ -10,6 +10,7 @@ class TodoState(rx.State):
     todos: list[TodoView] = []
     new_title: str = ''
     new_description: str = ''
+    new_estimated_hours: str = ''
     error: str = ''
     search: str = ''
     status_filter: str = 'Todas'
@@ -48,6 +49,10 @@ class TodoState(rx.State):
         self.new_description = value
 
     @rx.event
+    def set_new_estimated_hours(self,value: str):
+        self.new_estimated_hours = value
+
+    @rx.event
     def set_search(self,value: str):
         self.search = value
 
@@ -76,12 +81,14 @@ class TodoState(rx.State):
     @rx.event
     def add_todo(self):
         try:
-            TodoRepository().create(self.new_title,self.new_description)
+            TodoRepository().create(self.new_title,self.new_description,
+                                    estimated_hours=self.new_estimated_hours)
         except Exception as exc:
             self.error = self._report(exc,'guardar la tarea')
             return
         self.new_title = ''
         self.new_description = ''
+        self.new_estimated_hours = ''
         self.load_todos()
         return rx.toast.success('Tarea añadida correctamente')
 
@@ -149,7 +156,6 @@ class TodoState(rx.State):
         self.load_todos()
         return rx.toast.info('Tarea eliminada')
 
-
 def todo_item(todo: rx.Var[TodoView]):
     """Casilla, título tachado, descripción opcional, fecha y acciones."""
     return rx.box(rx.flex(
@@ -174,6 +180,21 @@ def todo_form():
                  value=TodoState.new_title,on_change=TodoState.set_new_title,width='100%',size='3'),
         rx.text_area(placeholder='Descripción (opcional)',name='description',aria_label='Descripción',max_length=3000,
                      value=TodoState.new_description,on_change=TodoState.set_new_description,width='100%',min_height='100px'),
+        rx.grid(
+            # Espacio reservado para Fecha límite y Prioridad.
+            rx.box(height='76px'),rx.box(height='76px'),
+            rx.vstack(
+                rx.hstack(rx.icon('clock',size=18),rx.text('Horas estimadas',weight='medium'),align='center',gap='8px'),
+                rx.input(type='number',name='estimated_hours',aria_label='Horas estimadas',
+                         placeholder='0',min=0,step=0.5,width='100%',size='3',
+                         value=TodoState.new_estimated_hours,
+                         on_change=TodoState.set_new_estimated_hours,
+                         style={'& input':{'appearance':'auto','MozAppearance':'auto'},
+                                '& input::-webkit-inner-spin-button':{'WebkitAppearance':'auto','opacity':'1'}}),
+                align='start',gap='8px',width='100%',min_width='0'),
+            # Espacios reservados para Recordatorio y Progreso.
+            rx.box(),rx.box(height='64px',grid_column='1 / -1'),
+            columns='2',gap='14px',width='100%'),
         rx.button('Añadir tarea',type='submit',width='100%',size='3'),
         gap='14px',width='100%'),on_submit=lambda _:TodoState.add_todo(),reset_on_submit=False,width='100%')
 

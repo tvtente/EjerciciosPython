@@ -2,6 +2,7 @@
 from datetime import timezone
 from zoneinfo import ZoneInfo
 from dataclasses import dataclass
+from math import isfinite
 from sqlalchemy import update
 from sqlmodel import Session, select
 from .models import Todo
@@ -16,6 +17,7 @@ class TodoView:
     completed: bool
     created_at: str
     formatted_date: str
+    estimated_hours: float
 
 
 def as_view(todo: Todo) -> TodoView:
@@ -24,7 +26,8 @@ def as_view(todo: Todo) -> TodoView:
         created = created.replace(tzinfo=timezone.utc)
     return TodoView(id=todo.id,title=todo.title,description=todo.description or '',
                     completed=todo.completed,created_at=created.isoformat(),
-                    formatted_date=created.astimezone(ZoneInfo('Europe/Madrid')).strftime('%d/%m/%Y %H:%M'))
+                    formatted_date=created.astimezone(ZoneInfo('Europe/Madrid')).strftime('%d/%m/%Y %H:%M'),
+                    estimated_hours=todo.estimated_hours)
 
 
 def validate_text(title: str, description: str) -> tuple[str,str | None]:
@@ -48,10 +51,16 @@ class TodoRepository:
             rows = session.exec(select(Todo).order_by(Todo.created_at.desc(),Todo.id.desc())).all()
             return [as_view(todo) for todo in rows]
 
-    def create(self,title: str,description: str='') -> TodoView:
+    def create(self,title: str,description: str='',estimated_hours: str='') -> TodoView:
         title,description = validate_text(title,description)
+        try:
+            hours = float(estimated_hours.strip().replace(',','.') or '0')
+        except ValueError:
+            raise ValueError('Las horas estimadas deben ser un número válido.') from None
+        if not isfinite(hours) or hours < 0:
+            raise ValueError('Las horas estimadas deben ser un número finito mayor o igual que cero.')
         with Session(self.engine) as session:
-            todo = Todo(title=title,description=description)
+            todo = Todo(title=title,description=description,estimated_hours=hours)
             session.add(todo)
             session.commit()
             session.refresh(todo)
