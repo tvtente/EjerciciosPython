@@ -2,6 +2,10 @@
 import reflex as rx
 from .tutorial import tutorial_index
 from .pandas_data_app import pandas_data_app
+from .superstore_app import superstore_index, SuperstoreState
+from .o10_graficos_vinculados import linked_charts_010
+from .o03_panel_control import panel_control_03
+from .o05_chat_app import chat_app_05, ChatAppState
 
 
 class State(rx.State):
@@ -124,7 +128,14 @@ def index():
             rx.flex(
                 rx.hstack(rx.box(rx.icon("hash", size=24, color="white"), background_color="#4f46e5", padding="12px", border_radius="14px"),
                           rx.box(rx.text("REFLEX LAB", size="1", weight="bold", color="#4f46e5", letter_spacing="0.15em"), rx.heading("Cada clic cuenta", size="7", color="#0f172a")), gap="14px", align="center"),
-                rx.link("Dashboard de ventas ↗", href="/tutorial", color="#4f46e5"),
+                rx.flex(
+                    rx.link("o03 · Panel de control ↗", href="/o03_panel_control", color="#4f46e5"),
+                    rx.link("o05 · Chat App ↗", href="/o05_chat_app", color="#4f46e5"),
+                    rx.link("o10 · Gráficos vinculados ↗", href="/o10_graficos_vinculados", color="#4f46e5"),
+                    rx.link("Superstore interactivo ↗", href="/superstore", color="#4f46e5"),
+                    rx.link("Dashboard de ventas ↗", href="/tutorial", color="#4f46e5"),
+                    gap="16px", flex_wrap="wrap",
+                ),
                 justify="between", align="center", flex_wrap="wrap", gap="20px", margin_bottom="28px",
             ),
             rx.text("Explora controles, eventos y estado con tus ejemplos de siempre.", color="#64748b", margin_bottom="28px"),
@@ -148,8 +159,14 @@ def index():
     )
 
 
-app = rx.App()
+app = rx.App(
+    style={"color": "#0f172a"},
+)
 app.add_page(index, route="/", title="Cada clic cuenta · Reflex")
 app.add_page(index, route="/ejemplos", title="Contador · Mis ejemplos")
 app.add_page(tutorial_index, route="/tutorial", title="Aprende Reflex · Panel de ventas")
 app.add_page(pandas_data_app, route="/pandas", title="Datos de Pandas · Reflex")
+app.add_page(superstore_index, route="/superstore", title="Superstore · Análisis interactivo", on_load=SuperstoreState.load_data)
+app.add_page(linked_charts_010, route="/o10_graficos_vinculados", title="o10 · Gráficos vinculados con XY")
+app.add_page(panel_control_03, route="/o03_panel_control", title="o03 · Panel de control de clientes")
+app.add_page(chat_app_05, route="/o05_chat_app", title="o05 · Chat App con Reflex", on_load=ChatAppState.refresh_ollama)

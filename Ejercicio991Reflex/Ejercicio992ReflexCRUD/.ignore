@@ -1,0 +1,8 @@
+# Material didáctico y archivos generados: fuera de las búsquedas de código
+entregables/
+docs/
+scripts/
+tests/guide/
+*.zip
+uv.lock
+reflex.lock/

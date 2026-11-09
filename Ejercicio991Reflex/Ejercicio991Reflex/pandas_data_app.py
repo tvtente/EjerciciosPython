@@ -1,5 +1,9 @@
+# Referencias cruzadas: ../Pandas_Reflex_paso_a_paso.ipynb; § indica el número de sección.
+# El notebook incluye los rangos de líneas de esta versión; busca también los nombres si el archivo cambia.
 import asyncio
 import csv
+from pathlib import Path
+from decimal import Decimal, InvalidOperation
 from io import StringIO
 from itertools import islice
 from typing import Any, TypedDict
@@ -7,20 +11,25 @@ from typing import Any, TypedDict
 import pandas as pd
 import reflex as rx
 import reflex_xy as rxy
-import xy
 
 
 REGIONS = ["North", "South", "East", "West"]
 MAX_CSV_BYTES = 2 * 1024 * 1024
 MAX_ROWS = 10_000
 UPLOAD_ID = "orders-csv"
-SAMPLE_CSV = b"region,product,units\nNorth,Tea,12\nSouth,Coffee,7\nNorth,Coffee,5\nWest,Tea,9\n"
+# NOTEBOOK §1: ruta del CSV. En el cuaderno se localiza PROJECT antes de leer el mismo archivo.
+DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "orders.csv"
+CSV_COLUMNS = ["region", "product", "units", "date", "unit_price", "unit_cost", "channel"]
 
 
 class OrderRow(TypedDict):
     region: str
     product: str
     units: int
+    date: str
+    unit_price: float
+    unit_cost: float
+    channel: str
 
 
 class RegionTotal(TypedDict):
@@ -33,6 +42,7 @@ class RegionColumns(TypedDict):
     units: list[int]
 
 
+# NOTEBOOK §2: lectura y validación; el cuaderno reutiliza esta función, sin duplicar reglas.
 def read_orders(data: bytes) -> list[OrderRow]:
     """Parse a bounded CSV and validate its columns and record values."""
     if len(data) > MAX_CSV_BYTES:
@@ -50,12 +60,12 @@ def read_orders(data: bytes) -> list[OrderRow]:
         ) from error
     if not columns or not rows:
         raise ValueError("The CSV needs a header and at least one record.")
-    if columns != ["region", "product", "units"]:
-        raise ValueError("Use exactly these columns: region,product,units.")
+    if columns not in (["region", "product", "units"], CSV_COLUMNS):
+        raise ValueError("Usa region,product,units o el formato ampliado de data/orders.csv.")
     if len(rows) > MAX_ROWS:
         raise ValueError("Include between 1 and 10,000 records.")
     if any(len(row) != len(columns) for row in rows):
-        raise ValueError("Use exactly three columns per row.")
+        raise ValueError("Cada fila debe tener el mismo número de columnas que la cabecera.")
     frame = pd.DataFrame(rows, columns=columns)
     frame["region"] = frame["region"].str.strip()
     frame["product"] = frame["product"].str.strip()
@@ -69,14 +79,42 @@ def read_orders(data: bytes) -> list[OrderRow]:
     frame["units"] = pd.to_numeric(frame["units"])
     if not frame["units"].between(0, 1_000_000).all():
         raise ValueError("Units must be whole numbers from 0 to 1,000,000.")
+    # Compatibilidad con los CSV originales de tres columnas.
+    # Sin fecha, precio o coste no inventamos ingresos ni series temporales.
+    if columns == ["region", "product", "units"]:
+        frame["date"] = ""
+        frame["unit_price"] = 0.0
+        frame["unit_cost"] = 0.0
+        frame["channel"] = "Unknown"
+    else:
+        dates = pd.to_datetime(frame["date"], format="%Y-%m-%d", errors="coerce")
+        if dates.isna().any():
+            raise ValueError("Las fechas deben ser válidas y tener formato YYYY-MM-DD.")
+        frame["date"] = dates.dt.strftime("%Y-%m-%d")
+        for column in ["unit_price", "unit_cost"]:
+            def parse_money(value):
+                try:
+                    number = Decimal(str(value).strip())
+                    if not number.is_finite() or not 0 <= number <= 1_000_000:
+                        raise ValueError
+                    if number != number.quantize(Decimal("0.01")):
+                        raise ValueError
+                    return float(number)
+                except (InvalidOperation, ValueError):
+                    raise ValueError("Precios y costes: entre 0 y 1.000.000, con máximo dos decimales.")
+            frame[column] = frame[column].map(parse_money)
+        frame["channel"] = frame["channel"].str.strip()
+        if not frame["channel"].isin(["Online", "Store", "Wholesale"]).all():
+            raise ValueError("Canales permitidos: Online, Store, Wholesale.")
     return frame.to_dict(orient="records")
 
 
+# NOTEBOOK §4 y §6: filtros con .loc y resumen de unidades por región.
 def analyze_orders(
     records: list[OrderRow], region: str, product: str
 ) -> tuple[list[OrderRow], list[RegionTotal], int, int]:
     """Filter records and return a bounded preview plus complete aggregates."""
-    frame = pd.DataFrame(records, columns=["region", "product", "units"])
+    frame = pd.DataFrame(records)
     if frame.empty:
         return [], [], 0, 0
     if region != "All":
@@ -99,6 +137,11 @@ class PandasAppState(rx.State):
     _orders: list[OrderRow] = []
     rows: list[OrderRow] = []
     summary: list[RegionTotal] = []
+    monthly: list[dict[str, Any]] = []
+    products: list[dict[str, Any]] = []
+    channels: list[dict[str, Any]] = []
+    revenue: str = "0.00 €"
+    profit: str = "0.00 €"
     region: str = "All"
     product: str = ""
     matching_count: int = 0
@@ -107,19 +150,50 @@ class PandasAppState(rx.State):
     processing: bool = False
     error: str = ""
 
+    # NOTEBOOK §4–§6 y §8: filtros, importes, agrupaciones y conversión a listas de diccionarios.
     def _refresh(self):
         """Apply the current filter to the session's backend-only records."""
         self.rows, self.summary, self.matching_count, self.total_units = (
             analyze_orders(self._orders, self.region, self.product)
         )
         self.loaded_count = len(self._orders)
+        # Todos los resúmenes usan TODOS los registros filtrados, no las 50 filas de vista previa.
+        frame = pd.DataFrame(self._orders)
+        self.monthly, self.products, self.channels = [], [], []
+        self.revenue, self.profit = "0.00 €", "0.00 €"
+        if frame.empty:
+            return
+        if self.region != "All":
+            frame = frame.loc[frame["region"] == self.region]
+        frame = frame.loc[frame["product"].str.contains(self.product.strip(), case=False, regex=False)].copy()
+        # Calculamos en céntimos enteros antes de agregar para evitar errores monetarios.
+        frame["revenue_cents"] = frame["units"] * frame["unit_price"].map(lambda x: round(x * 100))
+        frame["profit_cents"] = frame["revenue_cents"] - frame["units"] * frame["unit_cost"].map(lambda x: round(x * 100))
+        self.revenue = f"{frame['revenue_cents'].sum() / 100:.2f} €"
+        self.profit = f"{frame['profit_cents'].sum() / 100:.2f} €"
+        frame["month"] = frame["date"].str[:7]
+        monthly = frame.loc[frame["month"] != ""].groupby("month", as_index=False)[["revenue_cents", "profit_cents"]].sum()
+        monthly["revenue"] = monthly["revenue_cents"] / 100
+        monthly["profit"] = monthly["profit_cents"] / 100
+        self.monthly = monthly[["month", "revenue", "profit"]].to_dict("records")
+        products = frame.groupby("product", as_index=False)["units"].sum()
+        self.products = products.to_dict("records")
+        channels = frame.groupby("channel", as_index=False)["revenue_cents"].sum()
+        channels["revenue"] = channels["revenue_cents"] / 100
+        self.channels = channels[["channel", "revenue"]].to_dict("records")
 
     @rx.event
+    # NOTEBOOK §2 y §9: carga del archivo y comprobación del estado real de Reflex.
     def load_sample(self, clear_upload: bool = True):
         """Replace the dataset while retaining the applied filter."""
         if self.processing:
             return
-        self._orders = read_orders(SAMPLE_CSV)
+        try:
+            with DATA_PATH.open("rb") as source:
+                self._orders = read_orders(source.read(MAX_CSV_BYTES + 1))
+        except (OSError, ValueError) as error:
+            self.error = f"No se pudo cargar data/orders.csv: {error}"
+            return
         self.error = ""
         self._refresh()
         if clear_upload:
@@ -150,6 +224,7 @@ class PandasAppState(rx.State):
             self._refresh()
 
     @rx.event
+    # NOTEBOOK §3: region/product son variables allí; aquí llegan desde el formulario.
     def apply_filters(self, form_data: dict[str, Any]):
         """Apply a region and literal, case-insensitive product search."""
         if self.processing:
@@ -187,7 +262,8 @@ class PandasAppState(rx.State):
         )
 
 
-def metric_card(label: str, value: rx.Var[int], icon: str):
+# NOTEBOOK §5: la tabla metrics representa aquí los indicadores de estas tarjetas.
+def metric_card(label: str, value: rx.Var, icon: str):
     """Render one labelled aggregate alongside a decorative icon.
 
     Args:
@@ -222,6 +298,7 @@ def metric_card(label: str, value: rx.Var[int], icon: str):
     )
 
 
+# NOTEBOOK §7–§8: la interfaz muestra indicadores, gráfica regional y tabla de datos.
 def pandas_data_app(show_upload: bool = True):
     """Render the order dashboard with optional local CSV upload controls.
 
@@ -264,7 +341,7 @@ def pandas_data_app(show_upload: bool = True):
             ),
             rx.button(
                 rx.icon("rotate-ccw", size=14, aria_hidden=True),
-                "Use sample data",
+                "Cargar data/orders.csv",
                 on_click=PandasAppState.load_sample(show_upload),
                 disabled=PandasAppState.processing,
                 variant="outline",
@@ -394,6 +471,7 @@ def pandas_data_app(show_upload: bool = True):
             background=rx.color("gray", 3),
             border_radius="12px",
         ),
+        rx.callout("Datos ficticios · Filtra por región o producto: todas las gráficas e indicadores se actualizan juntos."),
         rx.grid(
             metric_card(
                 "Matching orders", PandasAppState.matching_count, "rows-3"
@@ -402,6 +480,8 @@ def pandas_data_app(show_upload: bool = True):
             metric_card(
                 "Records loaded", PandasAppState.loaded_count, "database"
             ),
+            metric_card("Ingresos", PandasAppState.revenue, "euro"),
+            metric_card("Beneficio bruto", PandasAppState.profit, "trending-up"),
             grid_template_columns="repeat(auto-fit, minmax(min(100%, 10rem), 1fr))",
             spacing="3",
             width="100%",
@@ -495,6 +575,7 @@ def pandas_data_app(show_upload: bool = True):
             border_radius="14px",
             width="100%",
         ),
+        extra_charts(),
         rx.vstack(
             rx.heading("Matching orders", size="4", as_="h3"),
             rx.text(
@@ -513,7 +594,7 @@ def pandas_data_app(show_upload: bool = True):
                                     if label == "Units"
                                     else "start",
                                 )
-                                for label in ["Region", "Product", "Units"]
+                                for label in ["Region", "Product", "Units", "Fecha", "Precio (€)", "Coste (€)", "Canal"]
                             ]
                         )
                     ),
@@ -535,6 +616,10 @@ def pandas_data_app(show_upload: bool = True):
                                     font_variant_numeric="tabular-nums",
                                     font_weight="500",
                                 ),
+                                rx.table.cell(row["date"]),
+                                rx.table.cell(row["unit_price"]),
+                                rx.table.cell(row["unit_cost"]),
+                                rx.table.cell(row["channel"]),
                             ),
                         )
                     ),
@@ -577,4 +662,41 @@ def pandas_preview():
         pandas_data_app(show_upload=False),
         on_mount=PandasAppState.load_sample(False),
         width="100%",
+    )
+
+
+
+# NOTEBOOK §7: mismas series, dibujadas con Matplotlib en el cuaderno y Recharts aquí.
+def extra_charts():
+    """Tres ejemplos: líneas temporales, barras por producto y barras por canal."""
+    def card(title, explanation, chart):
+        return rx.box(rx.heading(title, size="4"),
+                      rx.text(explanation, size="2", color=rx.color("gray", 11), margin_y="12px"),
+                      chart, width="100%", min_width="0", padding="20px",
+                      background=rx.color("gray", 1), border_radius="14px")
+
+    return rx.vstack(
+        card("Ingresos y beneficio por mes",
+             "groupby('month').sum(): ingresos = unidades × precio; beneficio bruto = ingresos − coste. Importes en euros, sin impuestos ni gastos adicionales.",
+             rx.cond(PandasAppState.monthly.length() > 0,
+                 rx.recharts.line_chart(
+                     rx.recharts.cartesian_grid(stroke_dasharray="3 3"),
+                     rx.recharts.x_axis(data_key="month"), rx.recharts.y_axis(),
+                     rx.recharts.tooltip(), rx.recharts.legend(),
+                     rx.recharts.line(data_key="revenue", name="Ingresos (€)", stroke="#6e56cf", stroke_width=3),
+                     rx.recharts.line(data_key="profit", name="Beneficio (€)", stroke="#10b981", stroke_width=3),
+                     data=PandasAppState.monthly, width="100%", height=300),
+                 rx.text("Carga el CSV ampliado para ver la evolución mensual."))),
+        card("Unidades por producto", "groupby('product')['units'].sum(): compara qué productos se venden más.",
+             rx.recharts.bar_chart(
+                 rx.recharts.x_axis(data_key="product"), rx.recharts.y_axis(allow_decimals=False),
+                 rx.recharts.tooltip(), rx.recharts.bar(data_key="units", name="Unidades", fill="#38bdf8"),
+                 data=PandasAppState.products, width="100%", height=260)),
+        card("Ingresos por canal", "groupby('channel'): compara la facturación online, en tienda y mayorista.",
+             rx.recharts.bar_chart(
+                 rx.recharts.x_axis(data_key="channel"), rx.recharts.y_axis(),
+                 rx.recharts.tooltip(), rx.recharts.bar(data_key="revenue", name="Ingresos (€)", fill="#f59e0b"),
+                 data=PandasAppState.channels, width="100%", height=260)),
+        rx.text("CSV antiguo de 3 columnas: sigue siendo válido; los ingresos se muestran como 0 y no hay fechas para la serie mensual.", size="1", color=rx.color("gray", 11)),
+        width="100%", align="stretch", gap="20px",
     )

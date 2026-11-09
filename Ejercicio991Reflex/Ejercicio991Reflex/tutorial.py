@@ -131,7 +131,7 @@ def panel(title: str, explanation: str, *children) -> rx.Component:
     return rx.box(
         rx.heading(title, size="5"),
         rx.text(explanation, color="#64748b", margin_top="8px", margin_bottom="20px"),
-        *children, background_color="white", padding=["20px", "28px"],
+        *children, background_color="white", color="#0f172a", padding=["20px", "28px"],
         border="1px solid #e2e8f0", border_radius="18px", width="100%",
     )
 

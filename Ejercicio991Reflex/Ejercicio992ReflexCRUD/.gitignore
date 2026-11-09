@@ -1,0 +1,28 @@
+.web
+.states
+# Entorno y archivos generados por Reflex
+.venv/
+.web/
+.states/
+reflex.lock/
+
+# Metadatos de instalación y cachés de Python
+*.egg-info/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Datos locales y configuración privada
+*.db
+*.db-*
+data/*.db*
+*.log
+.env
+assets/external/
+
+# Temporales de creación de presentaciones
+.presentation-build/
