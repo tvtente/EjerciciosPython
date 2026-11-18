@@ -1,0 +1,5 @@
+.venv/
+.reflex/
+.web/
+__pycache__/
+*.py[cod]

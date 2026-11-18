@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Audiolibro gratuito sobre usabilidad y accesibilidad digital.">
+  <title>SpotyWifi | Audiolibro gratuito</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="audiolibro-datos.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header class="header">
+    <a class="brand" href="#inicio" aria-label="SpotyWifi, inicio">
+      <span class="brand-icon" aria-hidden="true">◖◗</span>
+      <span>SpotyWifi<span class="brand-accent">.</span><small>ESCUCHAR PARA INCLUIR</small></span>
+    </a>
+    <div class="header-actions"><span id="user-status" class="user-status" aria-live="polite">◉ Invitado</span><button id="logout" class="logout" type="button" hidden>Salir</button><button id="open-admin" class="admin-trigger" type="button">Gestionar registros</button></div>
+  </header>
+  <main id="contenido">
+    <section class="returning" aria-labelledby="return-title">
+      <strong id="return-title">¿Ya te registraste?</strong>
+      <form id="return-form">
+        <label class="sr-only" for="return-email">Correo electrónico registrado</label>
+        <input id="return-email" type="email" autocomplete="email" required placeholder="Tu correo electrónico">
+        <button type="submit">Acceder →</button>
+      </form>
+      <p id="return-message" role="status" aria-live="polite"></p>
+    </section>
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> AUDIOLIBRO GRATUITO</p>
+        <h1>Diseñar para todos <em>empieza por escuchar.</em></h1>
+        <p class="lead">Descubre cómo la usabilidad y la accesibilidad hacen del mundo digital un lugar más inclusivo.</p>
+        <div class="hero-actions">
+          <a id="listen-button" class="button button-primary" href="#descarga">Descargar audiolibro <span aria-hidden="true">↓</span></a>
+          <button id="online-button" class="button button-outline" type="button">▶ Escuchar muestra en línea</button>
+        </div>
+        <p class="hero-footnote">Escucha un fragmento aquí o regístrate para descargar el contenido completo.</p>
+      </div>
+      <div class="art" role="img" aria-label="Ilustración de auriculares y ondas de sonido">
+        <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+        <div class="spark spark-one">✳</div><div class="spark spark-two">✦</div>
+        <div class="headphones"><div class="headband"></div><div class="ear left"></div><div class="ear right"></div><div class="sound"><span></span><span></span><span></span><span></span><span></span></div></div>
+        <div class="art-label"><span aria-hidden="true">▶</span><div><strong>Escucha con intención.</strong><small>Diseña sin barreras.</small></div></div>
+      </div>
+    </section>
+    <div id="form-home" hidden>
+      <div class="form-card">
+        <p class="card-kicker">EL CONOCIMIENTO SE COMPARTE</p>
+        <h3>Consigue tu audiolibro</h3>
+        <form id="download-form">
+          <div class="field-row">
+            <div class="field"><label for="nombre">Nombre *</label><input id="nombre" name="nombre" autocomplete="given-name" required placeholder="Tu nombre"></div>
+            <div class="field"><label for="apellidos">Apellidos *</label><input id="apellidos" name="apellidos" autocomplete="family-name" required placeholder="Tus apellidos"></div>
+          </div>
+          <div class="field"><label for="email">Correo electrónico *</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="tu@correo.com"></div>
+          <div class="field"><label for="perfil">¿A qué te dedicas? *</label><select id="perfil" name="perfil" required><option value="">Selecciona una opción</option><option>Estudiante</option><option>Diseño</option><option>Desarrollo</option><option>Educación</option><option>Otra profesión</option></select></div>
+          <label class="check"><input type="checkbox" id="consentimiento" required><span>Acepto que mis datos se guarden en este navegador para registrar la descarga. <strong>(obligatorio)</strong></span></label>
+          <button class="button button-primary form-button" type="submit">Registrarme <span aria-hidden="true">→</span></button>
+          <p class="form-hint">* Campos obligatorios. Tus datos permanecen en este navegador.</p>
+          <p id="mensaje" class="message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </main>
+  <footer><p>Usabilidad y accesibilidad para todas las personas.</p></footer>
+
+  <dialog id="access-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-header"><h2 id="dialog-title">Tu próxima escucha empieza aquí</h2><button type="button" id="close-dialog" aria-label="Cerrar ventana">✕</button></div>
+    <form id="modal-login" class="modal-login">
+      <label for="modal-email">¿Ya te registraste? Introduce tu correo</label>
+      <div><input id="modal-email" type="email" autocomplete="email" required placeholder="tu@correo.com"><button type="submit">Acceder</button></div>
+    </form>
+    <p id="modal-login-message" role="status"></p>
+    <details class="sample" id="sample-details">
+      <summary>Escuchar una muestra en línea</summary>
+      <p id="sample-text">Bienvenido a este audiolibro de estudio sobre usabilidad y accesibilidad en Internet. Esta guía breve presenta la situación actual en 2026. El objetivo es comprender qué significan la usabilidad y la accesibilidad web, por qué son importantes y cómo se aplican en el diseño de sitios y aplicaciones.</p>
+      <label class="sample-voice-label" for="sample-voice">Voz del navegador</label><select id="sample-voice"><option value="">Cargando voces disponibles…</option></select>
+      <button id="sample-play" type="button">▶ Escuchar muestra</button> <button id="sample-stop" type="button" disabled>■ Detener</button>
+      <p id="sample-status" role="status"></p>
+    </details>
+    <div id="modal-form-slot"></div>
+  </dialog>
+  <dialog id="admin-dialog" aria-labelledby="admin-title">
+    <div class="dialog-header"><h2 id="admin-title">Gestionar registros</h2><button id="close-admin" type="button" aria-label="Cerrar ventana">✕</button></div>
+    <p>Los registros se guardan en este navegador. Puedes exportarlos o recuperar una copia JSON.</p>
+    <div class="admin-controls">
+      <button id="exportar" class="button button-outline" type="button">Descargar registros CSV ↓</button>
+      <div class="json-controls">
+        <button id="export-json" class="button button-outline" type="button">Descargar data.json ↓</button>
+        <label for="import-json">Importar registros JSON</label><input id="import-json" type="file" accept=".json,application/json">
+      </div>
+      <p id="registros" aria-live="polite"></p>
+    </div>
+  </dialog>
+</body>
+</html>
+
+
+
+
+
+
+

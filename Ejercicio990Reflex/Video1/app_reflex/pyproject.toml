@@ -1,0 +1,7 @@
+[project]
+name = "app-reflex"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "reflex>=0.10.1",
+]
