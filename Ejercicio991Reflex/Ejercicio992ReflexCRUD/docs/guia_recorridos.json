@@ -1,0 +1,470 @@
+[
+  {
+    "id": "flow_init",
+    "title": "Diagrama · Inicialización de la BDD",
+    "subtitle": "Las flechas se leen de arriba abajo. Pulsa un nombre para abrir el código o la explicación.",
+    "kind": "sequence",
+    "rows": [
+      [
+        0,
+        1,
+        "TodoRepository()",
+        "repo_code",
+        false
+      ],
+      [
+        1,
+        2,
+        "get_engine()",
+        "db_code",
+        false
+      ],
+      [
+        2,
+        1,
+        "engine",
+        "engine",
+        true
+      ],
+      [
+        0,
+        1,
+        "initialize()",
+        "repo_code",
+        false
+      ],
+      [
+        1,
+        2,
+        "init_database()",
+        "db_code",
+        false
+      ],
+      [
+        2,
+        3,
+        "metadata.create_all()",
+        "init",
+        false
+      ],
+      [
+        3,
+        2,
+        "tablas disponibles",
+        "init",
+        true
+      ]
+    ],
+    "note": "load_todos() crea el repositorio y después llama a initialize(). Importar Todo registra la tabla antes de create_all().",
+    "code": "db_code",
+    "back": "db_code",
+    "lanes": [
+      [
+        "TodoState",
+        "state"
+      ],
+      [
+        "TodoRepository",
+        "repo"
+      ],
+      [
+        "database.py",
+        "engine"
+      ],
+      [
+        "SQLModel / SQLite",
+        "init"
+      ]
+    ]
+  },
+  {
+    "id": "flow_create",
+    "title": "Diagrama · Crear una tarea",
+    "subtitle": "Las flechas se leen de arriba abajo. Pulsa un nombre para abrir el código o la explicación.",
+    "kind": "sequence",
+    "rows": [
+      [
+        0,
+        1,
+        "add_todo()",
+        "create_code",
+        false
+      ],
+      [
+        1,
+        2,
+        "create(título, descripción)",
+        "create_code",
+        false
+      ],
+      [
+        2,
+        3,
+        "add, commit, refresh",
+        "transaction",
+        false
+      ],
+      [
+        3,
+        2,
+        "fila guardada",
+        "transaction",
+        true
+      ],
+      [
+        2,
+        1,
+        "return as_view(todo)",
+        "view",
+        true
+      ],
+      [
+        1,
+        1,
+        "load_todos()",
+        "flow_read",
+        false
+      ],
+      [
+        1,
+        0,
+        "Reflex actualiza la lista",
+        "ui",
+        true
+      ]
+    ],
+    "note": "todo_form() dispara add_todo() al enviar. create() valida antes de guardar. add_todo() no utiliza el TodoView devuelto.",
+    "code": "create_code",
+    "back": "create_code",
+    "lanes": [
+      [
+        "Interfaz",
+        "ui"
+      ],
+      [
+        "TodoState",
+        "state"
+      ],
+      [
+        "TodoRepository",
+        "repo"
+      ],
+      [
+        "SQLite",
+        "engine"
+      ]
+    ]
+  },
+  {
+    "id": "flow_read",
+    "title": "Diagrama · Consultar y mostrar las tareas",
+    "subtitle": "Las flechas se leen de arriba abajo. Pulsa un nombre para abrir el código o la explicación.",
+    "kind": "sequence",
+    "rows": [
+      [
+        0,
+        1,
+        "load_todos()",
+        "read_code",
+        false
+      ],
+      [
+        1,
+        2,
+        "initialize()",
+        "flow_init",
+        false
+      ],
+      [
+        1,
+        2,
+        "list_all()",
+        "read_code",
+        false
+      ],
+      [
+        2,
+        3,
+        "select(Todo).order_by(...)",
+        "read_code",
+        false
+      ],
+      [
+        2,
+        1,
+        "list[TodoView]",
+        "view",
+        true
+      ],
+      [
+        1,
+        1,
+        "self.todos = resultado",
+        "state",
+        true
+      ],
+      [
+        1,
+        0,
+        "rx.foreach(visible_todos)",
+        "ui_code",
+        true
+      ]
+    ],
+    "note": "on_load, Actualizar y los eventos de escritura usan load_todos(). list_all() transforma las filas con as_view().",
+    "code": "read_code",
+    "back": "read_code",
+    "lanes": [
+      [
+        "Interfaz",
+        "ui"
+      ],
+      [
+        "TodoState",
+        "state"
+      ],
+      [
+        "TodoRepository",
+        "repo"
+      ],
+      [
+        "SQLite",
+        "engine"
+      ]
+    ]
+  },
+  {
+    "id": "flow_update",
+    "title": "Diagrama · Editar una tarea",
+    "subtitle": "Las flechas se leen de arriba abajo. Pulsa un nombre para abrir el código o la explicación.",
+    "kind": "sequence",
+    "rows": [
+      [
+        0,
+        1,
+        "start_edit(id)",
+        "update",
+        false
+      ],
+      [
+        0,
+        1,
+        "update_todo()",
+        "update_code",
+        false
+      ],
+      [
+        1,
+        2,
+        "edit(id, título, descripción)",
+        "update_code",
+        false
+      ],
+      [
+        2,
+        3,
+        "get() + cambios + commit()",
+        "update_code",
+        false
+      ],
+      [
+        2,
+        1,
+        "finaliza edit()",
+        "update",
+        true
+      ],
+      [
+        1,
+        1,
+        "load_todos()",
+        "flow_read",
+        false
+      ],
+      [
+        1,
+        0,
+        "Reflex actualiza la lista",
+        "ui",
+        true
+      ]
+    ],
+    "note": "Editar abre el diálogo con start_edit(). Guardar cambios dispara update_todo(). El id identifica la misma fila durante el recorrido.",
+    "code": "update_code",
+    "back": "update_code",
+    "lanes": [
+      [
+        "Interfaz",
+        "ui"
+      ],
+      [
+        "TodoState",
+        "state"
+      ],
+      [
+        "TodoRepository",
+        "repo"
+      ],
+      [
+        "SQLite",
+        "engine"
+      ]
+    ]
+  },
+  {
+    "id": "flow_completed",
+    "title": "Diagrama · Marcar una tarea completada",
+    "subtitle": "Las flechas se leen de arriba abajo. Pulsa un nombre para abrir el código o la explicación.",
+    "kind": "sequence",
+    "rows": [
+      [
+        0,
+        1,
+        "toggle_complete()",
+        "completed_code",
+        false
+      ],
+      [
+        1,
+        2,
+        "set_completed(id, checked)",
+        "completed_code",
+        false
+      ],
+      [
+        2,
+        3,
+        "update() + commit()",
+        "completed_code",
+        false
+      ],
+      [
+        3,
+        2,
+        "resultado de la escritura",
+        "completed",
+        true
+      ],
+      [
+        2,
+        1,
+        "finaliza set_completed()",
+        "completed",
+        true
+      ],
+      [
+        1,
+        1,
+        "load_todos()",
+        "flow_read",
+        false
+      ],
+      [
+        1,
+        0,
+        "Reflex actualiza la casilla",
+        "ui",
+        true
+      ]
+    ],
+    "note": "La casilla envía el id y checked. El repositorio asigna ese valor a completed y comprueba que rowcount sea 1.",
+    "code": "completed_code",
+    "back": "completed_code",
+    "lanes": [
+      [
+        "Interfaz",
+        "ui"
+      ],
+      [
+        "TodoState",
+        "state"
+      ],
+      [
+        "TodoRepository",
+        "repo"
+      ],
+      [
+        "SQLite",
+        "engine"
+      ]
+    ]
+  },
+  {
+    "id": "flow_delete",
+    "title": "Diagrama · Eliminar una tarea",
+    "subtitle": "Las flechas se leen de arriba abajo. Pulsa un nombre para abrir el código o la explicación.",
+    "kind": "sequence",
+    "rows": [
+      [
+        0,
+        1,
+        "ask_delete(id)",
+        "delete",
+        false
+      ],
+      [
+        0,
+        1,
+        "delete_todo()",
+        "delete_code",
+        false
+      ],
+      [
+        1,
+        2,
+        "delete(id)",
+        "delete_code",
+        false
+      ],
+      [
+        2,
+        3,
+        "get() + delete() + commit()",
+        "delete_code",
+        false
+      ],
+      [
+        2,
+        1,
+        "finaliza delete()",
+        "delete",
+        true
+      ],
+      [
+        1,
+        1,
+        "load_todos()",
+        "flow_read",
+        false
+      ],
+      [
+        1,
+        0,
+        "Reflex actualiza la lista",
+        "ui",
+        true
+      ]
+    ],
+    "note": "Eliminar llama a ask_delete() y abre la confirmación. Solo Sí, eliminar dispara delete_todo() y solicita borrar la fila.",
+    "code": "delete_code",
+    "back": "delete_code",
+    "lanes": [
+      [
+        "Interfaz",
+        "ui"
+      ],
+      [
+        "TodoState",
+        "state"
+      ],
+      [
+        "TodoRepository",
+        "repo"
+      ],
+      [
+        "SQLite",
+        "engine"
+      ]
+    ]
+  }
+]
