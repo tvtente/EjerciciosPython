@@ -122,11 +122,11 @@ function loadSampleVoices() {
   }
   const previous = sampleVoice.value;
   const voices = window.speechSynthesis.getVoices();
-  const spanish = voices.filter(voice => /^es([-_]|$)/i.test(voice.lang) || /spanish|español/i.test(voice.name));
-  sampleVoices = spanish.length ? spanish : voices;
+  const language = window.siteLang || 'es';
+  sampleVoices = voices.filter(voice => voice.lang.toLowerCase().startsWith(language)).slice(0, 3);
   sampleVoice.replaceChildren();
   if (!sampleVoices.length) {
-    sampleVoice.add(new Option('No hay voces disponibles todavía', ''));
+    sampleVoice.add(new Option(window.siteLang === 'ca' ? 'No hi ha veus disponibles per a aquest idioma' : 'No hay voces disponibles para este idioma', ''));
     return;
   }
   sampleVoices.forEach((voice, index) => sampleVoice.add(new Option(voice.name + ' (' + voice.lang + ')', String(index))));
@@ -173,6 +173,7 @@ samplePlay.addEventListener('click', () => {
     return;
   }
   const synth = window.speechSynthesis;
+  if (!sampleVoices.length) { setSampleState('idle', window.siteLang === 'ca' ? 'No hi ha cap veu instal·lada per a aquest idioma.' : 'No hay ninguna voz instalada para este idioma.'); return; }
   synth.cancel();
   // Algunos navegadores conservan el estado de pausa tras cancelar.
   synth.resume();
@@ -232,8 +233,10 @@ document.querySelector('#import-json').addEventListener('change', async event =>
 });
 
 function createAudiobookUrl() {
-  const chapterJson = JSON.stringify(audiobookChapters).replace(/</g, '\u003c');
-  const html = audiobookTemplate.replace('__CHAPTERS_JSON__', () => chapterJson);
+  const isCatalan = window.siteLang === 'ca';
+  const chapterJson = JSON.stringify(isCatalan ? catalanChapters : audiobookChapters).replace(/</g, '\\u003c');
+  const template = isCatalan ? catalanPlayerTemplate(audiobookTemplate) : audiobookTemplate;
+  const html = template.replace('__CHAPTERS_JSON__', () => chapterJson).replace('const list=ordered.length?ordered:voices;', 'const list=ordered.slice(0,3);').replace("synth.cancel();runToken++;index=0;playing=true;paused=false;setButtons();speakNext(runToken);", "if (!voices[Number(voiceSelect.value)] || !voiceSelect.value) { statusEl.textContent = document.documentElement.lang === 'ca' ? 'Instal·la una veu catalana per escoltar l’audiollibre.' : 'Instala una voz española para escuchar el audiolibro.'; return; } synth.cancel();runToken++;index=0;playing=true;paused=false;setButtons();speakNext(runToken);");
   return URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }));
 }
 function downloadAudiobook(event) {
@@ -301,4 +304,12 @@ document.querySelector('#logout').addEventListener('click', () => {
   button.removeAttribute('aria-label');
   onlineButton.textContent = '▶ Escuchar muestra en línea';
   document.querySelector('#return-email').focus();
+});
+
+
+
+document.querySelector('#open-register').addEventListener('click', () => {
+  modalSlot.appendChild(card);
+  dialog.showModal();
+  document.querySelector('#nombre').focus();
 });

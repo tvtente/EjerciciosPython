@@ -6,3 +6,5 @@ El archivo audiolibro.csv contiene una copia de los capítulos y sus párrafos, 
 
 Los registros se guardan en el navegador y dispositivo donde se rellena el formulario. En «Preparar y gestionar» se pueden descargar en CSV o data.json e importar un JSON exportado anteriormente. El JSON no se actualiza automáticamente. Otros navegadores o dispositivos tienen sus propios registros, y borrar los datos del navegador puede eliminarlos. El acceso mediante correo no verifica la identidad.
 
+
+La página incluye un selector entre español y catalán. El idioma elegido también determina el texto del audiolibro generado y las voces compatibles mostradas. Se muestran hasta tres voces instaladas; si no hay voces para ese idioma, hay que instalarlas en el dispositivo.

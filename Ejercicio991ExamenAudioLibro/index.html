@@ -8,7 +8,9 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="styles.css">
   <script src="audiolibro-datos.js" defer></script>
+  <script src="audiolibro-ca.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="idioma.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -17,7 +19,7 @@
       <span class="brand-icon" aria-hidden="true">◖◗</span>
       <span>SpotyWifi<span class="brand-accent">.</span><small>ESCUCHAR PARA INCLUIR</small></span>
     </a>
-    <div class="header-actions"><span id="user-status" class="user-status" aria-live="polite">◉ Invitado</span><button id="logout" class="logout" type="button" hidden>Salir</button><button id="open-admin" class="admin-trigger" type="button">Gestionar registros</button></div>
+    <div class="header-actions"><label class="sr-only" for="language">Idioma</label><select id="language" aria-label="Idioma"><option value="es">Español</option><option value="ca">Català</option></select><span id="user-status" class="user-status" aria-live="polite">◉ Invitado</span><button id="logout" class="logout" type="button" hidden>Salir</button><button id="open-admin" class="admin-trigger" type="button">Gestionar registros</button></div>
   </header>
   <main id="contenido">
     <section class="returning" aria-labelledby="return-title">
@@ -26,6 +28,7 @@
         <label class="sr-only" for="return-email">Correo electrónico registrado</label>
         <input id="return-email" type="email" autocomplete="email" required placeholder="Tu correo electrónico">
         <button type="submit">Acceder →</button>
+        <button id="open-register" type="button">Registrarse</button>
       </form>
       <p id="return-message" role="status" aria-live="polite"></p>
     </section>
@@ -98,6 +101,9 @@
   </dialog>
 </body>
 </html>
+
+
+
 
 
 
