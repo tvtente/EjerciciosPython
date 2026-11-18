@@ -1,6 +1,11 @@
-﻿'use strict';
+'use strict';
 window.siteLang = 'es';
+try { if (localStorage.getItem('spotywifiLanguage') === 'ca') window.siteLang = 'ca'; } catch { /* Idioma por defecto sin almacenamiento. */ }
+document.querySelector('#language').value = window.siteLang;
 const translations = {
+  'El acceso solo consulta los registros de este navegador; no verifica la identidad.':'L’accés només consulta els registres d’aquest navegador; no verifica la identitat.', 'Opciones de acceso':'Opcions d’accés', 'Ya tengo cuenta':'Ja tinc compte', 'Este correo ya está registrado en este navegador. Accede con tu correo.':'Aquest correu ja està registrat en aquest navegador. Accedeix amb el teu correu.',
+  'Buscar por nombre o correo':'Cerca per nom o correu', 'Personas registradas en este navegador':'Persones registrades en aquest navegador', 'Nombre':'Nom', 'Apellidos':'Cognoms', 'Correo electrónico':'Correu electrònic', 'Perfil':'Perfil', 'Fecha':'Data',
+  'Tema claro':'Tema clar', 'Tema oscuro':'Tema fosc',
   'Saltar al contenido':'Ves al contingut', 'ESCUCHAR PARA INCLUIR':'ESCOLTAR PER INCLOURE', '◉ Invitado':'◉ Convidat', 'Salir':'Sortir', 'Gestionar registros':'Gestionar registres',
   '¿Ya te registraste?':'Ja t’has registrat?', 'Correo electrónico registrado':'Correu electrònic registrat', 'Acceder →':'Accedir →', 'AUDIOLIBRO GRATUITO':'AUDIOLLIBRE GRATUÏT',
   'Diseñar para todos':'Dissenyar per a tothom', 'empieza por escuchar.':'comença per escoltar.', 'Descubre cómo la usabilidad y la accesibilidad hacen del mundo digital un lugar más inclusivo.':'Descobreix com la usabilitat i l’accessibilitat fan del món digital un lloc més inclusiu.',
@@ -19,7 +24,7 @@ function translatePage() {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     const node = walker.currentNode;
-    if (node.parentElement.closest('script, style, #language')) continue;
+    if (node.parentElement.closest('script, style, #language, #records-body')) continue;
     const raw = node.nodeValue;
     const text = raw.trim();
     if (!text) continue;
@@ -43,7 +48,7 @@ function translatePage() {
       let values = attributeOriginals.get(element) || {};
       if (!(attr in values)) values[attr] = element.getAttribute(attr);
       attributeOriginals.set(element, values);
-      const map = {'Tu correo electrónico':'El teu correu electrònic','Tu nombre':'El teu nom','Tus apellidos':'Els teus cognoms','Cerrar ventana':'Tancar la finestra','Ilustración de auriculares y ondas de sonido':'Il·lustració d’uns auriculars i ones de so','Descargar audiolibro completo':'Descarregar l’audiollibre complet'};
+      const map = {'Buscar registros':'Cerca registres','Tema oscuro':'Tema fosc','Información sobre el acceso':'Informació sobre l’accés','Tu correo electrónico':'El teu correu electrònic','Tu nombre':'El teu nom','Tus apellidos':'Els teus cognoms','Cerrar ventana':'Tancar la finestra','Ilustración de auriculares y ondas de sonido':'Il·lustració d’uns auriculars i ones de so','Descargar audiolibro completo':'Descarregar l’audiollibre complet'};
       element.setAttribute(attr, window.siteLang === 'ca' ? (map[values[attr]] || values[attr]) : values[attr]);
     }
   });
@@ -51,7 +56,7 @@ function translatePage() {
 }
 function catalanPlayerTemplate(html) {
   const pairs = [
-    ['lang="es"','lang="ca"'], ['Usabilidad y accesibilidad en Internet','Usabilitat i accessibilitat a Internet'],
+    ['lang="es"','lang="ca"'], ['Audiolibro —','Audiollibre —'], ['Usabilidad y accesibilidad en Internet','Usabilitat i accessibilitat a Internet'],
     ['Audiolibro de estudio · basado en el dosier PDF adjunto · septiembre de 2026','Audiollibre d’estudi · basat en el dossier PDF adjunt · setembre de 2026'],
     ['Controles del audiolibro','Controls de l’audiollibre'], ['▶ Reproducir','▶ Reproduir'], ['Ⅱ Pausar','Ⅱ Pausar'], ['▶ Continuar','▶ Continuar'], ['■ Detener','■ Aturar'], ['Voz de Windows','Veu del navegador'], ['Cargando voces disponibles…','Carregant les veus disponibles…'], ['Velocidad','Velocitat'], ['Lenta','Lenta'], ['Normal','Normal'], ['Ágil','Àgil'], ['Rápida','Ràpida'],
     ['Preparado. Selecciona una voz española y pulsa Reproducir.','Preparat. Selecciona una veu catalana i prem Reproduir.'],
@@ -66,9 +71,14 @@ function catalanPlayerTemplate(html) {
 document.querySelector('#language').addEventListener('change', event => {
   stopSample('');
   window.siteLang = event.target.value;
+  try { localStorage.setItem('spotywifiLanguage', window.siteLang); } catch { /* Se conserva durante esta visita. */ }
   loadSampleVoices();
+  renderRecords();
   translatePage();
 });
+updateLanguageFlag();
+loadSampleVoices();
+renderRecords();
 translatePage();
 
 let translationQueued = false;
@@ -77,6 +87,13 @@ new MutationObserver(() => {
   translationQueued = true;
   queueMicrotask(() => { translationQueued = false; translatePage(); });
 }).observe(document.body, { childList: true, subtree: true, characterData: true });
+
+
+
+
+
+
+
 
 
 

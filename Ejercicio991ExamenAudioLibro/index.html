@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -19,7 +19,7 @@
       <span class="brand-icon" aria-hidden="true">◖◗</span>
       <span>SpotyWifi<span class="brand-accent">.</span><small>ESCUCHAR PARA INCLUIR</small></span>
     </a>
-    <div class="header-actions"><label class="sr-only" for="language">Idioma</label><select id="language" aria-label="Idioma"><option value="es">Español</option><option value="ca">Català</option></select><span id="user-status" class="user-status" aria-live="polite">◉ Invitado</span><button id="logout" class="logout" type="button" hidden>Salir</button><button id="open-admin" class="admin-trigger" type="button">Gestionar registros</button></div>
+    <div class="header-actions"><label class="sr-only" for="language">Idioma</label><span class="language-control"><span id="language-flag" class="language-flag flag-es" aria-hidden="true"></span><select id="language" aria-label="Idioma"><option value="es">Español</option><option value="ca">Català</option></select></span><button id="theme" class="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Tema oscuro"><span class="theme-sun" aria-hidden="true">☀</span><span class="theme-track" aria-hidden="true"><span class="theme-thumb"></span></span><span class="theme-moon" aria-hidden="true">☾</span></button><span id="user-status" class="user-status" aria-live="polite">◉ Invitado</span><button id="logout" class="logout" type="button" hidden>Salir</button><button id="open-admin" class="admin-trigger" type="button">Gestionar registros</button></div>
   </header>
   <main id="contenido">
     <section class="returning" aria-labelledby="return-title">
@@ -59,7 +59,7 @@
             <div class="field"><label for="nombre">Nombre *</label><input id="nombre" name="nombre" autocomplete="given-name" required placeholder="Tu nombre"></div>
             <div class="field"><label for="apellidos">Apellidos *</label><input id="apellidos" name="apellidos" autocomplete="family-name" required placeholder="Tus apellidos"></div>
           </div>
-          <div class="field"><label for="email">Correo electrónico *</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="tu@correo.com"></div>
+          <div class="field"><label for="email">Correo electrónico *</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="tu@correo.com" aria-describedby="duplicate-email-message"><p id="duplicate-email-message" class="duplicate-message" role="status" aria-live="polite"></p></div>
           <div class="field"><label for="perfil">¿A qué te dedicas? *</label><select id="perfil" name="perfil" required><option value="">Selecciona una opción</option><option>Estudiante</option><option>Diseño</option><option>Desarrollo</option><option>Educación</option><option>Otra profesión</option></select></div>
           <label class="check"><input type="checkbox" id="consentimiento" required><span>Acepto que mis datos se guarden en este navegador para registrar la descarga. <strong>(obligatorio)</strong></span></label>
           <button class="button button-primary form-button" type="submit">Registrarme <span aria-hidden="true">→</span></button>
@@ -73,11 +73,13 @@
 
   <dialog id="access-dialog" aria-labelledby="dialog-title">
     <div class="dialog-header"><h2 id="dialog-title">Tu próxima escucha empieza aquí</h2><button type="button" id="close-dialog" aria-label="Cerrar ventana">✕</button></div>
-    <form id="modal-login" class="modal-login">
+    <details class="access-info"><summary aria-label="Información sobre el acceso">i</summary><p class="access-note">El acceso solo consulta los registros de este navegador; no verifica la identidad.</p></details>
+    <div class="access-options" role="group" aria-label="Opciones de acceso"><button id="choose-login" type="button" aria-expanded="false" aria-controls="login-panel">Ya tengo cuenta</button><button id="choose-register" type="button" aria-expanded="false" aria-controls="modal-form-slot">Registrarme</button></div>
+    <div id="login-panel" hidden><form id="modal-login" class="modal-login">
       <label for="modal-email">¿Ya te registraste? Introduce tu correo</label>
       <div><input id="modal-email" type="email" autocomplete="email" required placeholder="tu@correo.com"><button type="submit">Acceder</button></div>
     </form>
-    <p id="modal-login-message" role="status"></p>
+    <p id="modal-login-message" role="status"></p></div>
     <details class="sample" id="sample-details">
       <summary>Escuchar una muestra en línea</summary>
       <p id="sample-text">Bienvenido a este audiolibro de estudio sobre usabilidad y accesibilidad en Internet. Esta guía breve presenta la situación actual en 2026. El objetivo es comprender qué significan la usabilidad y la accesibilidad web, por qué son importantes y cómo se aplican en el diseño de sitios y aplicaciones.</p>
@@ -85,7 +87,7 @@
       <button id="sample-play" type="button">▶ Escuchar muestra</button> <button id="sample-stop" type="button" disabled>■ Detener</button>
       <p id="sample-status" role="status"></p>
     </details>
-    <div id="modal-form-slot"></div>
+    <div id="modal-form-slot" hidden></div>
   </dialog>
   <dialog id="admin-dialog" aria-labelledby="admin-title">
     <div class="dialog-header"><h2 id="admin-title">Gestionar registros</h2><button id="close-admin" type="button" aria-label="Cerrar ventana">✕</button></div>
@@ -97,10 +99,26 @@
         <label for="import-json">Importar registros JSON</label><input id="import-json" type="file" accept=".json,application/json">
       </div>
       <p id="registros" aria-live="polite"></p>
+      <label class="records-label" for="records-search">Buscar por nombre o correo</label>
+      <input id="records-search" type="search" autocomplete="off" placeholder="Buscar registros">
+      <div class="records-scroll" tabindex="0" role="region" aria-labelledby="records-title">
+        <table class="records-table">
+          <caption id="records-title">Personas registradas en este navegador</caption>
+          <thead><tr><th scope="col">Nombre</th><th scope="col">Apellidos</th><th scope="col">Correo electrónico</th><th scope="col">Perfil</th><th scope="col">Fecha</th></tr></thead>
+          <tbody id="records-body"></tbody>
+        </table>
+      </div>
+      <p id="records-result" role="status" aria-live="polite"></p>
     </div>
   </dialog>
 </body>
 </html>
+
+
+
+
+
+
 
 
 

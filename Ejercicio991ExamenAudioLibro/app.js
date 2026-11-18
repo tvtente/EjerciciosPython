@@ -1,4 +1,4 @@
-﻿'use strict';
+'use strict';
 const form = document.querySelector('#download-form');
 const message = document.querySelector('#mensaje');
 const count = document.querySelector('#registros');
@@ -13,17 +13,84 @@ function readRecords() {
 function updateCount() {
   try { const n = readRecords().length; count.textContent = `${n} registro${n === 1 ? '' : 's'} guardado${n === 1 ? '' : 's'} en este navegador.`; }
   catch { count.textContent = 'No se pueden leer los registros de este navegador.'; }
+  renderRecords();
 }
+function renderRecords() {
+  const body = document.querySelector('#records-body');
+  const search = document.querySelector('#records-search');
+  const result = document.querySelector('#records-result');
+  if (!body || !search || !result) return;
+  body.replaceChildren();
+  try {
+    const query = search.value.trim().toLocaleLowerCase();
+    const records = readRecords().filter(record => [record.nombre, record.apellidos, record.email].some(value => String(value || '').toLocaleLowerCase().includes(query)));
+    for (const record of records) {
+      const row = document.createElement('tr');
+      const date = new Date(record.fecha);
+      const formattedDate = Number.isNaN(date.getTime()) ? String(record.fecha || '') : date.toLocaleDateString(window.siteLang === 'ca' ? 'ca-ES' : 'es-ES');
+      for (const value of [record.nombre, record.apellidos, record.email, record.perfil, formattedDate]) {
+        const cell = document.createElement('td');
+        cell.textContent = String(value || '');
+        row.appendChild(cell);
+      }
+      body.appendChild(row);
+    }
+    result.textContent = window.siteLang === 'ca'
+      ? `${records.length} resultat(s).`
+      : `${records.length} resultado(s).`;
+  } catch {
+    result.textContent = window.siteLang === 'ca' ? 'No es poden llegir els registres.' : 'No se pueden leer los registros.';
+  }
+}
+document.querySelector('#records-search').addEventListener('input', renderRecords);
+// Un registro pertenece al navegador donde se guardó o importó.
+const registrationEmail = document.querySelector('#email');
+const duplicateEmailMessage = document.querySelector('#duplicate-email-message');
+function normalizeEmail(value) {
+  return String(value || '').trim().toLowerCase();
+}
+function checkExistingEmail() {
+  const email = normalizeEmail(registrationEmail.value);
+  if (!email || registrationEmail.validity.typeMismatch) {
+    duplicateEmailMessage.textContent = '';
+    registrationEmail.removeAttribute('aria-invalid');
+    return false;
+  }
+  const exists = readRecords().some(record => normalizeEmail(record.email) === email);
+  registrationEmail.toggleAttribute('aria-invalid', exists);
+  duplicateEmailMessage.textContent = exists
+    ? (window.siteLang === 'ca'
+      ? 'Aquest correu ja està registrat en aquest navegador. Selecciona «Ja tinc compte» per accedir.'
+      : 'Este correo ya está registrado en este navegador. Selecciona «Ya tengo cuenta» para acceder.')
+    : '';
+  return exists;
+}
+registrationEmail.addEventListener('blur', () => {
+  try { checkExistingEmail(); } catch { duplicateEmailMessage.textContent = ''; }
+});
+registrationEmail.addEventListener('input', () => {
+  duplicateEmailMessage.textContent = '';
+  registrationEmail.removeAttribute('aria-invalid');
+});
+document.querySelector('#language').addEventListener('change', () => {
+  if (duplicateEmailMessage.textContent) queueMicrotask(() => {
+    try { checkExistingEmail(); } catch { duplicateEmailMessage.textContent = ''; }
+  });
+});
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   message.textContent = '';
   try {
     const records = readRecords();
+    if (checkExistingEmail()) {
+      registrationEmail.focus();
+      return;
+    }
     records.push({ fecha: new Date().toISOString(), nombre: form.nombre.value.trim(), apellidos: form.apellidos.value.trim(), email: form.email.value.trim(), perfil: form.perfil.value });
     localStorage.setItem(storageKey, JSON.stringify(records));
     activeEmail = form.email.value.trim().toLocaleLowerCase();
     setAccess(records[records.length - 1]);
-    form.reset(); updateCount();
+    form.reset(); duplicateEmailMessage.textContent = ''; registrationEmail.removeAttribute('aria-invalid'); updateCount();
     message.textContent = 'Registro completado.';
     if (dialog.open) dialog.close();
   } catch {
@@ -78,19 +145,38 @@ const originalParent = card.parentNode;
 const originalNext = card.nextSibling;
 const modalSlot = document.querySelector('#modal-form-slot');
 const modalMessage = document.querySelector('#modal-login-message');
+const loginPanel = document.querySelector('#login-panel');
+const chooseLogin = document.querySelector('#choose-login');
+const chooseRegister = document.querySelector('#choose-register');
+function showAccessPanel(panel) {
+  loginPanel.hidden = panel !== 'login';
+  modalSlot.hidden = panel !== 'register';
+  chooseLogin.setAttribute('aria-expanded', String(panel === 'login'));
+  chooseRegister.setAttribute('aria-expanded', String(panel === 'register'));
+  modalMessage.textContent = '';
+}
+chooseLogin.addEventListener('click', () => { showAccessPanel('login'); document.querySelector('#modal-email').focus(); });
+chooseRegister.addEventListener('click', () => { showAccessPanel('register'); document.querySelector('#nombre').focus(); });
 let activeEmail = '';
+let dialogOpener = null;
+function openAccessDialog() {
+  dialogOpener = document.activeElement;
+  dialog.showModal();
+}
 document.querySelector('#listen-button').addEventListener('click', event => {
   event.preventDefault();
   if (activeEmail) { downloadAudiobook(event); return; }
   modalSlot.appendChild(card);
+  showAccessPanel('');
   modalMessage.textContent = activeEmail ? 'Ya puedes descargar tu audiolibro.' : '';
-  dialog.showModal();
+  openAccessDialog();
 });
 document.querySelector('#close-dialog').addEventListener('click', () => dialog.close());
 dialog.addEventListener('close', () => {
   stopSample('');
   originalParent.insertBefore(card, originalNext);
-  document.querySelector('#listen-button').focus();
+  const target = dialogOpener && dialogOpener.isConnected && dialogOpener.getClientRects().length ? dialogOpener : document.querySelector('#listen-button');
+  target.focus();
 });
 document.querySelector('#modal-login').addEventListener('submit', event => {
   event.preventDefault();
@@ -228,6 +314,7 @@ document.querySelector('#import-json').addEventListener('change', async event =>
     }
     localStorage.setItem(storageKey, JSON.stringify(records));
     count.textContent = `Importación completada: ${added} registro(s) añadido(s). Total: ${records.length}.`;
+    renderRecords();
   } catch { count.textContent = 'No se pudo importar el archivo. Comprueba que sea un data.json válido de esta página.'; }
   event.target.value = '';
 });
@@ -244,13 +331,13 @@ function downloadAudiobook(event) {
   const url = createAudiobookUrl();
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'Audiolibro_Usabilidad_Accesibilidad.html';
+  link.download = window.siteLang === 'ca' ? 'Audiollibre_Usabilitat_Accessibilitat.html' : 'Audiolibro_Usabilidad_Accesibilidad.html';
   document.body.appendChild(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 const adminDialog = document.querySelector('#admin-dialog');
-document.querySelector('#open-admin').addEventListener('click', () => adminDialog.showModal());
+document.querySelector('#open-admin').addEventListener('click', () => { renderRecords(); adminDialog.showModal(); });
 document.querySelector('#close-admin').addEventListener('click', () => adminDialog.close());
 const onlineButton = document.querySelector('#online-button');
 const sampleDetails = document.querySelector('#sample-details');
@@ -267,7 +354,8 @@ onlineButton.addEventListener('click', () => {
     return;
   }
   modalSlot.appendChild(card);
-  dialog.showModal();
+  showAccessPanel('');
+  openAccessDialog();
   sampleDetails.open = true;
   sampleDetails.querySelector('summary').focus();
 });
@@ -310,6 +398,58 @@ document.querySelector('#logout').addEventListener('click', () => {
 
 document.querySelector('#open-register').addEventListener('click', () => {
   modalSlot.appendChild(card);
-  dialog.showModal();
+  showAccessPanel('register');
+  openAccessDialog();
   document.querySelector('#nombre').focus();
 });
+
+
+// Personaliza los mensajes nativos sin depender del idioma del navegador.
+document.querySelectorAll('input[required], select[required]').forEach(field => {
+  const clearMessage = () => field.setCustomValidity('');
+  field.addEventListener('input', clearMessage);
+  field.addEventListener('change', clearMessage);
+  field.addEventListener('invalid', () => {
+    field.setCustomValidity('');
+    const ca = window.siteLang === 'ca';
+    if (field.validity.valueMissing) {
+      if (field.type === 'checkbox') field.setCustomValidity(ca ? 'Cal acceptar aquesta casella per continuar.' : 'Debes aceptar esta casilla para continuar.');
+      else if (field.tagName === 'SELECT') field.setCustomValidity(ca ? 'Selecciona una opció.' : 'Selecciona una opción.');
+      else field.setCustomValidity(ca ? 'Omple aquest camp.' : 'Completa este campo.');
+    } else if (field.validity.typeMismatch && field.type === 'email') {
+      field.setCustomValidity(ca ? 'Introdueix una adreça de correu vàlida.' : 'Introduce una dirección de correo válida.');
+    }
+  });
+});
+document.querySelector('#language').addEventListener('change', () => {
+  document.querySelectorAll('input[required], select[required]').forEach(field => field.setCustomValidity(''));
+});
+
+
+
+
+// Mantiene la preferencia local aunque la página se abra con doble clic.
+const themeSelector = document.querySelector('#theme');
+function applyTheme(theme) {
+  const selected = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = selected;
+  themeSelector.setAttribute('aria-checked', String(selected === 'dark'));
+}
+let savedTheme = null;
+try { savedTheme = localStorage.getItem('spotywifiTheme'); } catch { /* El selector sigue funcionando sin almacenamiento. */ }
+applyTheme(savedTheme);
+themeSelector.addEventListener('click', () => {
+  const selected = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(selected);
+  try { localStorage.setItem('spotywifiTheme', selected); } catch { /* La preferencia durará hasta cerrar la página. */ }
+});
+
+const languageFlag = document.querySelector('#language-flag');
+function updateLanguageFlag() {
+  languageFlag.classList.toggle('flag-es', document.querySelector('#language').value === 'es');
+  languageFlag.classList.toggle('flag-ca', document.querySelector('#language').value === 'ca');
+}
+document.querySelector('#language').addEventListener('change', updateLanguageFlag);
+updateLanguageFlag();
+
+

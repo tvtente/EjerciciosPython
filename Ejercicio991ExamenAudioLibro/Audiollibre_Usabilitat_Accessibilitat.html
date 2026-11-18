@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audiollibre — Usabilitat i accessibilitat a Internet</title>
+<style>
+:root{color-scheme:light;--ink:#18324f;--blue:#24679b;--pale:#edf4fa;--line:#d5e0e9}
+*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#263746;font:16px/1.6 "Segoe UI",Arial,sans-serif}
+main{max-width:900px;margin:32px auto;padding:28px;background:white;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 30px #18324f12}
+h1{color:var(--ink);line-height:1.2;margin:0 0 8px;font-size:clamp(1.7rem,4vw,2.4rem)}
+.sub{color:#607487;margin:0 0 24px}.panel{background:var(--pale);border:1px solid var(--line);padding:18px;border-radius:12px;margin:20px 0}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+label{display:flex;flex-direction:column;gap:5px;font-size:.9rem;font-weight:600;color:#344b60}
+select,input{font:inherit;border:1px solid #b9c9d7;border-radius:8px;padding:9px;background:white;color:#243746}
+button{border:0;border-radius:9px;padding:11px 17px;background:var(--blue);color:white;font-weight:650;font-size:1rem;cursor:pointer}
+button.secondary{background:#526779}button:disabled{opacity:.45;cursor:not-allowed}
+.status{font-size:.93rem;color:#38556c;margin-top:12px;min-height:1.5em}
+progress{width:100%;height:12px;margin-top:12px;accent-color:var(--blue)}
+.chapter{border-top:1px solid var(--line);padding:14px 0}.chapter h2{color:var(--blue);font-size:1.12rem;margin:0 0 6px}
+.chapter p{margin:6px 0}.chapter.active{background:#f2f7fb;outline:2px solid #d9e9f5;border-radius:8px;padding:14px}
+.small{font-size:.88rem;color:#64798a}
+@media(max-width:600px){main{margin:0;padding:18px;border-radius:0}.controls>*{width:100%}button{width:100%}}
+</style>
+</head>
+<body>
+<main>
+<h1>Usabilitat i accessibilitat a Internet</h1>
+<p class="sub">Audiollibre d’estudi · basat en el dossier PDF adjunt · setembre de 2026</p>
+<section class="panel" aria-label="Controls de l’audiollibre">
+<div class="controls">
+<button id="play">▶ Reproduir</button>
+<button id="pause" class="secondary" disabled>Ⅱ Pausar</button>
+<button id="resume" class="secondary" disabled>▶ Continuar</button>
+<button id="stop" class="secondary" disabled>■ Aturar</button>
+<label>Veu del navegador
+<select id="voice"><option>Carregant les veus disponibles…</option></select>
+</label>
+<label>Velocitat
+<select id="rate"><option value=".85">Lenta</option><option value="1" selected>Normal</option><option value="1.1">Àgil</option><option value="1.2">Ràpida</option></select>
+</label>
+</div>
+<progress id="progress" value="0" max="1"></progress>
+<div class="status" id="status" role="status" aria-live="polite">Preparat. Selecciona una veu catalana i prem Reproduir.</div>
+<p class="small">La veu prové de les veus instal·lades al dispositiu i disponibles per al navegador.</p>
+</section>
+<section id="contents" aria-label="Contingut de l’audiollibre"></section>
+<p class="small">Obre aquest fitxer amb doble clic en un navegador compatible. Cal tenir instal·lada una veu catalana.</p>
+</main>
+<script>
+const chapters = [["Introducció. Usabilitat i accessibilitat a Internet",["Benvingut a aquest audiollibre d'estudi sobre usabilitat i accessibilitat a Internet. Aquesta guia breu presenta la situació actual el 2026.","L'objectiu és comprendre què signifiquen la usabilitat i l'accessibilitat web, per què són importants, com s'apliquen al disseny de llocs i aplicacions i quins organismes, estàndards i normes intervenen en la seva regulació.","Com a idea clau: un lloc usable permet a les persones assolir els seus objectius de manera senzilla, eficient i satisfactòria. Un lloc accessible procura que aquestes mateixes possibilitats estiguin disponibles també per a persones amb capacitats i formes d'interacció diferents.","Convé distingir tots dos conceptes. La usabilitat és la facilitat d'aprenentatge, navegació, comprensió i realització de tasques. L'accessibilitat consisteix a eliminar o reduir barreres perquè les persones amb discapacitat puguin percebre, operar, comprendre i utilitzar el contingut digital.","En una frase: la usabilitat pregunta si és fàcil d'utilitzar; l'accessibilitat pregunta si el pot utilitzar una gamma àmplia de persones, incloses les persones amb discapacitat."]],["Capítol 1. Què és la usabilitat web?",["La usabilitat és la qualitat d'un producte o servei interactiu que permet als seus usuaris assolir objectius concrets amb eficàcia, eficiència i satisfacció dins d'un context determinat. A la pràctica web, es reflecteix en el fet que una persona trobi allò que busca, entengui què pot fer i completi una tasca sense esforç innecessari.","Vegem-ne els principis pràctics.","Claredat: els textos, botons, menús i missatges han de ser fàcils d'interpretar.","Consistència: els elements similars s'han de comportar i presentar de manera semblant.","Navegació: l'usuari ha de saber on és, d'on ve i quines opcions té.","Prevenció i recuperació d'errors: els formularis han d'ajudar a evitar errors i explicar com corregir-los.","Rendiment: els temps de càrrega han de ser raonables i la resposta, predictible.","Disseny centrat en les persones: es prova amb usuaris reals i es millora a partir d'evidències.","Per exemple, en una botiga en línia una bona usabilitat significa poder localitzar un producte, conèixer-ne el preu i les característiques, afegir-lo al carretó, introduir les dades de lliurament i finalitzar la compra sense passos confusos ni sorpreses.","Com s'avalua la usabilitat? Mitjançant proves amb usuaris, revisió experta, anàlisi de tasques, entrevistes, qüestionaris, mètriques d'abandonament i eines d'analítica. L'accessibilitat també s'ha d'incorporar a les proves, i no tractar-la com una comprovació final aïllada.","La usabilitat i l'accessibilitat es reforcen. Moltes millores d'accessibilitat també milloren l'experiència general: el llenguatge clar, la navegació coherent, els controls prou grans, els formularis comprensibles, els subtítols o una bona estructura d'encapçalaments beneficien moltes persones, no només les que tenen una discapacitat."]],["Capítol 2. Què és l'accessibilitat web?",["L'accessibilitat web busca que els llocs, les aplicacions i els continguts digitals puguin ser utilitzats per persones amb discapacitat, incloses les persones amb discapacitats visuals, auditives, físiques, de la parla, cognitives o neurològiques. També pot millorar l'experiència de persones grans o d'usuaris amb limitacions temporals o situacionals.","Les WCAG són el referent tècnic internacional. Les sigles corresponen a Web Content Accessibility Guidelines. Aquestes pautes són desenvolupades pel World Wide Web Consortium, conegut com a W3C, a través de la seva Web Accessibility Initiative, o WAI. WCAG 2.2 va ser publicada com a recomanació del W3C el 2023 i posteriorment va ser aprovada com a norma internacional ISO IEC 40500:2025.","Els quatre principis POUR són: perceptible, operable, comprensible i robust.","Perceptible: la informació s'ha de poder percebre. Per exemple, mitjançant alternatives textuals, subtítols, contrast i estructura semàntica.","Operable: la interfície s'ha de poder gestionar, per exemple mitjançant el teclat, sense dependre exclusivament de gestos o del ratolí.","Comprensible: la informació, la navegació i el funcionament han de ser previsibles i entenedors.","Robust: el contingut ha de funcionar de manera fiable amb navegadors i tecnologies de suport.","Pel que fa als nivells de conformitat, WCAG en defineix tres: A, que és el mínim; AA, que inclou els criteris d'A i AA; i AAA, que els inclou tots. A la pràctica, el nivell AA és una referència habitual per a projectes i requisits de conformitat.","Algunes novetats de WCAG 2.2 inclouen criteris addicionals relacionats, entre altres aspectes, amb el focus visible, la mida dels objectius tàctils, les alternatives a operacions d'arrossegament, l'ajuda consistent, la introducció repetida de dades i l'autenticació accessible."]],["Capítol 3. Qui ho regula i quines normes s'apliquen a Espanya?",["És important recordar que no hi ha un únic organisme que reguli Internet. Cal distingir entre els organismes que elaboren estàndards tècnics i les autoritats que aproven i fan complir les lleis.","W3C i WAI: estàndard tècnic. El World Wide Web Consortium desenvolupa estàndards internacionals de la Web. La seva iniciativa WAI desenvolupa les WCAG, que serveixen de referència tècnica per a l'accessibilitat.","Espanya, sector públic. El Reial decret 1112/2018 regula l'accessibilitat dels llocs web i aplicacions per a dispositius mòbils del sector públic. Transposa la Directiva de la Unió Europea 2016/2102 i exigeix requisits d'accessibilitat, declaracions d'accessibilitat, mecanismes de comunicació i reclamació, i sistemes de seguiment.","L'Observatori d'Accessibilitat Web, conegut com a OAW, dins l'àmbit de l'Administració electrònica, fa tasques de seguiment i utilitza metodologies basades en la norma UNE EN 301 549.","Espanya, determinats productes i serveis. La Llei 11/2023 transposa la Directiva de la Unió Europea 2019/882, coneguda com a European Accessibility Act, sobre requisits d'accessibilitat de determinats productes i serveis. Amplia el marc més enllà del sector públic a determinats àmbits del mercat.","La norma europea EN 301 549 estableix requisits d'accessibilitat per a productes i serveis de tecnologies de la informació i la comunicació, i té un paper central en el marc europeu. Per a llocs web, la seva relació amb WCAG permet convertir criteris tècnics d'accessibilitat en requisits aplicables dins del context europeu.","Un esquema per memoritzar-ho: W3C i WAI desenvolupen estàndards i pautes tècniques com WCAG. La Unió Europea estableix directives i legislació europea d'accessibilitat. Espanya, a través del Butlletí Oficial de l'Estat, incorpora i desenvolupa obligacions mitjançant lleis i reials decrets. L'OAW fa seguiment de l'accessibilitat al sector públic espanyol."]],["Capítol 4. Com aplicar aquests conceptes en un lloc web",["Aquesta és una llista de comprovació ràpida per aplicar els conceptes.","Primer: fer servir HTML semàntic i una estructura lògica d'encapçalaments.","Segon: proporcionar text alternatiu adequat per a imatges informatives i marcar com a decoratives les que no aporten informació.","Tercer: garantir la navegació i l'operació mitjançant teclat i un focus visible.","Quart: mantenir prou contrast i no transmetre informació únicament mitjançant el color.","Cinquè: subtitular vídeos i proporcionar alternatives quan calgui.","Sisè: crear formularis amb etiquetes clares, instruccions i missatges d'error comprensibles.","Setè: evitar moviments, centelleigs o interaccions que puguin generar barreres.","Vuitè: comprovar el lloc amb eines automàtiques i, especialment, mitjançant revisió manual i proves amb usuaris.","Novè: definir objectius de conformitat, per exemple WCAG 2.2 nivell AA, i documentar les incidències i correccions.","Vegem un petit cas pràctic. Suposem un formulari de contacte amb els camps Nom, Correu i Missatge. Si els camps no tenen etiquetes associades correctament, el contrast és baix, els errors només apareixen en vermell i el botó no es pot activar amb teclat, hi ha problemes tant d'accessibilitat com d'usabilitat. La solució ha d'abordar l'estructura, la interacció, la comunicació de l'error i el disseny visual, i després verificar-se amb proves."]],["Conclusions per estudiar",["Primera conclusió: usabilitat i accessibilitat estan relacionades, però no són sinònims.","Segona: WCAG és el principal referent tècnic internacional per a l'accessibilitat web.","Tercera: el W3C i la WAI desenvolupen les WCAG; no són un regulador governamental.","Quarta: a Espanya, el sector públic està subjecte principalment al Reial decret 1112/2018 en matèria d'accessibilitat web i mòbil.","Cinquena: la Llei 11/2023 amplia el marc espanyol a determinats productes i serveis, en transposició de la normativa europea.","Sisena: l'accessibilitat s'ha d'integrar des del disseny, el desenvolupament, els continguts, les proves i el manteniment; no s'ha d'afegir al final.","Com a fonts oficials i per ampliar, el dossier cita W3C i WAI, amb les pautes WCAG 2; el Butlletí Oficial de l'Estat, per al Reial decret 1112/2018 i la Llei 11/2023; i l'Administració electrònica, per a l'Observatori d'Accessibilitat Web.","Aquest material està actualitzat al setembre de 2026 i és divulgatiu. Per a qüestions jurídiques concretes cal consultar sempre el text oficial vigent de cada norma.","Fi de l'audiollibre. Gràcies per escoltar aquesta guia d'estudi sobre usabilitat i accessibilitat a Internet."]]];
+const items = [];
+chapters.forEach((chapter, ci) => {
+  const section=document.createElement('section'); section.className='chapter'; section.id='chapter-'+ci;
+  const h=document.createElement('h2'); h.textContent=chapter[0]; section.appendChild(h);
+  chapter[1].forEach((paragraph, pi) => {
+    const p=document.createElement('p'); p.textContent=paragraph; section.appendChild(p);
+    items.push({text:paragraph,chapter:ci,element:section});
+  });
+  document.getElementById('contents').appendChild(section);
+});
+const synth=window.speechSynthesis;
+const voiceSelect=document.getElementById('voice'), statusEl=document.getElementById('status');
+const progress=document.getElementById('progress');
+let voices=[], index=0, playing=false, paused=false, currentUtterance=null, runToken=0;
+function loadVoices(){
+  voices=synth.getVoices();
+  const previous=voiceSelect.value;
+  voiceSelect.innerHTML='';
+  const spanish=voices.filter(v=>/^ca(-|_)/i.test(v.lang) || /catalan|català/i.test(v.name));
+  const ordered=[...spanish].sort((a,b)=>{
+    const score=v=>(/ca-ES/i.test(v.lang)?10:0)+(/alvaro|álvaro|male|mascul/i.test(v.name)?20:0)+(/microsoft/i.test(v.name)?2:0);
+    return score(b)-score(a);
+  });
+  const list=ordered.slice(0,3);
+  list.forEach(v=>{const o=document.createElement('option');o.value=voices.indexOf(v);o.textContent=v.name+' — '+v.lang;voiceSelect.appendChild(o)});
+  if(list.length){
+    const preferred=list.find(v=>/alvaro|álvaro/i.test(v.name)) || list.find(v=>/^ca-ES/i.test(v.lang)) || list[0];
+    voiceSelect.value=String(voices.indexOf(preferred));
+    if(previous && [...voiceSelect.options].some(o=>o.value===previous)) voiceSelect.value=previous;
+    statusEl.textContent='Veus disponibles: '+list.length+'. Veu seleccionada: '+voiceSelect.selectedOptions[0].textContent+'.';
+  }else{
+    const o=document.createElement('option');o.textContent='No s’han detectat veus instal·lades';voiceSelect.appendChild(o);
+    statusEl.textContent='No s’han detectat veus. Instal·la una veu catalana al dispositiu.';
+  }
+}
+loadVoices(); if('onvoiceschanged' in synth) synth.onvoiceschanged=loadVoices;
+function setButtons(){
+ document.getElementById('play').disabled=playing;
+ document.getElementById('pause').disabled=!playing||paused;
+ document.getElementById('resume').disabled=!playing||!paused;
+ document.getElementById('stop').disabled=!playing;
+}
+function highlight(){
+ document.querySelectorAll('.chapter').forEach(e=>e.classList.remove('active'));
+ if(items[index]){items[index].element.classList.add('active');items[index].element.scrollIntoView({behavior:'smooth',block:'nearest'})}
+ progress.value=items.length?index/items.length:0;
+}
+function speakNext(token){
+ if(token!==runToken || index>=items.length){if(token===runToken){playing=false;paused=false;progress.value=1;statusEl.textContent='Audiollibre finalitzat.';setButtons()}return}
+ highlight();
+ const item=items[index];
+ const u=new SpeechSynthesisUtterance(item.text);
+ const selected=voices[Number(voiceSelect.value)];
+ if(selected)u.voice=selected;
+ u.lang=selected?selected.lang:'ca-ES';
+ u.rate=Number(document.getElementById('rate').value);
+ u.pitch=1;
+ currentUtterance=u;
+ statusEl.textContent='Reproduint: '+chapters[item.chapter][0];
+ u.onend=()=>{if(token!==runToken)return;index++;speakNext(token)};
+ u.onerror=(e)=>{if(token!==runToken)return;statusEl.textContent='No s’ha pogut reproduir aquest fragment ('+e.error+'). Comprova la veu instal·lada.';playing=false;setButtons()};
+ synth.speak(u);
+}
+document.getElementById('play').addEventListener('click',()=>{
+ if(!('speechSynthesis' in window)){statusEl.textContent='Aquest navegador no admet síntesi de veu.';return}
+ if (!voices[Number(voiceSelect.value)] || !voiceSelect.value) { statusEl.textContent = document.documentElement.lang === 'ca' ? 'Instal·la una veu catalana per escoltar l’audiollibre.' : 'Instala una voz española para escuchar el audiolibro.'; return; } synth.cancel();runToken++;index=0;playing=true;paused=false;setButtons();speakNext(runToken);
+});
+document.getElementById('pause').addEventListener('click',()=>{synth.pause();paused=true;statusEl.textContent='Audiollibre en pausa.';setButtons()});
+document.getElementById('resume').addEventListener('click',()=>{synth.resume();paused=false;statusEl.textContent='Continuant…';setButtons()});
+document.getElementById('stop').addEventListener('click',()=>{runToken++;synth.cancel();playing=false;paused=false;index=0;progress.value=0;statusEl.textContent='Reproducció aturada.';setButtons()});
+voiceSelect.addEventListener('change',()=>{if(playing&&!paused){synth.cancel();runToken++;playing=true;setButtons();speakNext(runToken)}});
+window.addEventListener('beforeunload',()=>synth.cancel());
+</script>
+</body></html>

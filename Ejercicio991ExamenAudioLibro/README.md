@@ -8,3 +8,7 @@ Los registros se guardan en el navegador y dispositivo donde se rellena el formu
 
 
 La página incluye un selector entre español y catalán. El idioma elegido también determina el texto del audiolibro generado y las voces compatibles mostradas. Se muestran hasta tres voces instaladas; si no hay voces para ese idioma, hay que instalarlas en el dispositivo.
+
+La raíz también contiene audiolibro-ca.csv y Audiollibre_Usabilitat_Accessibilitat.html con la traducción catalana. Al seleccionar «Català», SpotyWifi genera y descarga la versión catalana; al seleccionar «Español», genera la versión española. Los archivos CSV son copias para consulta: la página utiliza los datos de audiolibro-datos.js y audiolibro-ca.js.
+
+El idioma y el tema elegidos se recuerdan en este navegador. En «Gestionar registros» hay una tabla consultable y una búsqueda por nombre, apellidos o correo. La tabla muestra únicamente los datos locales o importados en ese navegador. La navegación principal y las ventanas se pueden usar con teclado: Tab y Mayús+Tab para recorrer controles, Enter o espacio para activarlos y Escape para cerrar las ventanas.
